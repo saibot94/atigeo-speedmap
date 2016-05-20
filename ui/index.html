@@ -2,9 +2,21 @@
 <html>
 
 <head>
+	<meta charset="UTF-8">
 	<title>Speedmap - Atigeo</title>
+
 	<link rel="stylesheet" href="css/bootstrap.css">
 	<link rel="stylesheet" href="css/bootstrap-theme.css">
+
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/nv.d3.js"></script>
+	<script src="js/jquery-2.1.4.js"></script>
+	<script src="js/bootstrap.js"></script>
+
+	<script src="js/angular.js"></script>
+	<script src="js/angular-nvd3.min.js"></script>
+
+	<link rel="stylesheet" href="css/nv.d3.min.css">
 
 </head>
 
@@ -29,8 +41,9 @@
 			<button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>
 		</form>
 		<br>
-		<div class="well well-sm">
-			Note: the date format must be: "yyyy-mm-dd". <br>If either field is empty, it just gets the aggregates for all periods <br>If dates are inserted, then the aggregates will be recomputed (which might take a while)
+			<div class="well well-sm">
+				Note: the date format must be: "yyyy-mm-dd". <br>If either field is empty, it just gets the aggregates for all periods <br>If dates are inserted, then the aggregates will be recomputed (which might take a while)
+			</div>
 		</div>
 		<hr ng-if="vm.aggregatesByLanguageVeniceNoIt.length > 0">
 		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByLanguageVeniceNoIt.length > 0">
@@ -248,15 +261,23 @@
 			</p> -->
 		</div>
 
+		<div class="container" ng-controller="GraphController as vm">
+			<div class="row">
+				<div class="col-md-10 col-md-push-1">
+					<nvd3 options="vm.lineGraphOptions" data="vm.lineGraphData"> </nvd3>
+				</div>
+			</div>
+			
+		</div>
+
 	</div>
 
+	<!--<script src="js/nv.d3.min.js" charset="utf-8"></script>-->
 
-	<script src="js/jquery-2.1.4.js"></script>
-	<script src="js/bootstrap.js"></script>
-	<script src="js/angular.js"></script>
 
 	<script src="app/app.js"></script>
-	<script src="app/ApiSearchService.js"></script>
+	<script src="app/GraphController.js"></script>
+	<script src="app/ApiAggregateService.js"></script>
 
 </body>
 

@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var app = angular.module('SrcApp', []);
+	var app = angular.module('SrcApp', ['nvd3']);
 
 
 	app.controller('MainController', MainController);
