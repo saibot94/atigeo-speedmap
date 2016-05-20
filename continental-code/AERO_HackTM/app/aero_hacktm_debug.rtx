@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RunTask_Configuration version="1.1">
+  <General>
+    <AutoRun>True</AutoRun>
+    <StepTime>200</StepTime>
+  </General>
+  <Module>
+    <Type>Dll</Type>
+    <Path>.\debug\aero_hacktm_runtask.dll</Path>
+      <Parameters>
+        <Parameter name="Config" type="group">
+        <Data>
+          <Value>
+          </Value>
+          <Type>string</Type>
+          <Presentation>default</Presentation>
+        </Data>
+        <Description>
+        </Description>
+        <External>
+          <File>
+          </File>
+          <StartParameter>
+          </StartParameter>
+        </External>
+        </Parameter>
+    </Parameters>
+  </Module>
+  <Log>
+    <Tab>
+      <Active>True</Active>
+    </Tab>
+    <File>
+      <Active>False</Active>
+      <Path></Path>
+    </File>
+    <MaxEntries>0</MaxEntries>
+  </Log>
+  <DrawingTabs>
+    <DrawingTab>
+      <Name>Window (3D)</Name>
+      <Active>True</Active>
+      <RenderMode>3D</RenderMode>
+      <RenderAPI>OpenGL</RenderAPI>
+      <RenderFactor>1</RenderFactor>
+      <DefaultPosition>
+        <XAngle>0.000000</XAngle>
+        <YAngle>0.000000</YAngle>
+        <ZDistance>0.000000</ZDistance>
+      </DefaultPosition>
+    </DrawingTab> 
+  </DrawingTabs>
+  <Layout>
+    <NotebookPerspective></NotebookPerspective>
+  </Layout>
+</RunTask_Configuration>
