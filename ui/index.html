@@ -11,15 +11,13 @@
 <body ng-app="SrcApp">
 	<div class="container" ng-controller="MainController as vm">
 		<div class="col-md-10 col-md-push-1">
-		<img src="img/xPatternsLogo.jpg" style="width:300px;height:200px">
-		<br>
+
 			<h2 class="ng-cloak" style="color: #1E90FF">
 			Speedmap		
-
 		</h2>
-
-
-		<form>
+		<img src="img/xPatternsLogo.jpg" style="width:150px;height:100px" class="pull-right">
+		<br>
+		<form style="clear:both;">
 			<div class="form-group">
 				<label>Date from: </label>
 				<input class="form-control" type="text" ng-model="vm.formModel.dateFrom">
