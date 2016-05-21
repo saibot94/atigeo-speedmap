@@ -1,5 +1,6 @@
 import random
 from datetime import datetime
+import time
 
 from elasticsearch import Elasticsearch
 from elasticsearch import helpers
@@ -9,7 +10,7 @@ ES_ENDPOINT = "search-hacktm2016-atigeo-xsynhcvmgcugkkyuvrpnaxqxbe.us-west-1.es.
 POINTS_INDEX = "test-points"
 POINTS_DOC_TYPE = "points"
 PAGE_SIZE = 10  # It actually retrieves 5 * PAGE_SIZE
-LEGAT_SPEED_QUERY = {"query": {"range": {"speed": {"gte": 50}}}}
+LEGAL_SPEED_QUERY = {"query": {"range": {"speed": {"gte": 50}}}}
 
 es = Elasticsearch([{'host': ES_ENDPOINT, 'port': 80}])
 faker = Factory.create()
@@ -21,7 +22,7 @@ def create_bulk_points(count=None):
     for idx in range(cnt):
         print "Doc: %s" % idx
         doc = {
-            'timestamp': datetime.now(),
+            'timestamp': random.choice([int(time.time()), 100]),
             'lat': faker.latitude(),
             'long': faker.longitude(),
             'speed': random.choice(range(25, 120))
@@ -69,7 +70,7 @@ def search_all_points():
     print res
 
 
-def _scroll_points(query=None, size=50):
+def scroll_points(query=None, fields=None, size=50):
     if not query:
         raise ValueError("The query arg. cannot be empty")
 
@@ -79,7 +80,7 @@ def _scroll_points(query=None, size=50):
         search_type="scan",
         size=size / 5,
         scroll="60s",
-        _source=["lat"]
+        _source=fields or True
     )
 
     scroll_size = res['hits']['total']
@@ -88,15 +89,18 @@ def _scroll_points(query=None, size=50):
             scroll_id = res['_scroll_id']
             points_batch = es.scroll(scroll_id=scroll_id, scroll='60s')
             points_data = points_batch['hits']['hits']
-            yield points_data, len(points_data)
+            points = [point['_source'] for point in points_data]
+            yield points, scroll_size
             scroll_size = len(points_batch['hits']['hits'])
         except:
             break
 
 
 def main():
-    for points_batch, batch_size in _scroll_points(LEGAT_SPEED_QUERY):
-        print batch_size, points_batch
+    # for points_batch, batch_size in _scroll_points(LEGAT_SPEED_QUERY):
+    #     print batch_size, points_batch
+    # delete_points_index()
+    create_bulk_points()
 
 
 if __name__ == "__main__":
