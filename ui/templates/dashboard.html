@@ -22,7 +22,8 @@
 <div class="row" ng-controller="MapController as mapController">
     <div class="col-md-12 col-md-push-1">
         <h2 class="ng-cloak" style="color: #1E90FF">
-            Speedmap
+            Speedmap - {{mainController.location}}
+            {{mainController.geometryBounds}}
         </h2>
         <div class="checkbox checkbox-primary">
             <input type="checkbox" id="checkbox1" class="styled" ng-model="mapController.map.showHeat">

@@ -16,13 +16,25 @@
 	app.config(['$routeProvider',
       function($routeProvider) {
         $routeProvider.
-          when('/', {
+          when('/dashboard', {
             templateUrl: 'templates/dashboard.html',
-            controller: 'MainController'
+            controller: 'MainController',
+            controllerAs: 'mainController',
+            resolve:  {
+                loc: function($q, LocationService, ApiSearchService){
+                    return ApiSearchService.GetCoordinates(LocationService.GetLocation());
+                }
+            }
+
           }).
           when('/analytics', {
             templateUrl: 'templates/analytics.html',
             controller: 'AnalyticsController'
+          }).
+          when('/', {
+            templateUrl: 'templates/search.html',
+            controller: 'SearchController',
+            controllerAs: 'vm'
           }).
           otherwise({
             redirectTo: '/'
@@ -32,10 +44,17 @@
 
 	app.controller('MainController', MainController);
 
-	MainController.$inject = ['$scope', 'ApiAggregateService', '$sce','$filter'];
+	MainController.$inject = ['$scope', 'ApiAggregateService', '$sce','$filter', '$q','LocationService', 'loc'];
 
-	function MainController($scope, ApiAggregateService, $sce, $filter){
+	function MainController($scope, ApiAggregateService, $sce, $filter, $q,LocationService, loc){
+
 		var vm = this;
+
+
+		console.log('locatino: ' + loc);
+        vm.location = loc.data.results[0].formatted_address;//address_components[0].long_name;
+        LocationService.SetBounds(loc.data.results[0].geometry.bounds);
+
 
 		vm.searchResults = [];
 		vm.aggregatesByLanguageVeniceNoIt = [];
