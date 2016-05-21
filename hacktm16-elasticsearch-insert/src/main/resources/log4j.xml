@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE log4j:configuration SYSTEM "log4j.dtd">
+<log4j:configuration>
+    <appender name="fileAppender" class="org.apache.log4j.rolling.RollingFileAppender">
+        <param name="File" value="hacktm-atigeo-publish.log"/>
+        <param name="Threshold" value="DEBUG"/>
+        <param name="BufferedIO" value="false"/>
+        <param name="ImmediateFlush" value="true"/>
+        <rollingPolicy class="org.apache.log4j.rolling.TimeBasedRollingPolicy">
+            <param name="FileNamePattern" value="hacktm-atigeo-publish.%d{yyyy-MM-dd}.gz"/>
+        </rollingPolicy>
+        <layout class="org.apache.log4j.PatternLayout">
+            <param name="ConversionPattern" value="[%x%-5p] [%d{ISO8601} - %c{1}] %m%n"/>
+        </layout>
+    </appender>
+
+    <appender name="asyncAppenderFile" class="org.apache.log4j.AsyncAppender">
+        <param name="BufferSize" value="500"/>
+        <appender-ref ref="fileAppender"/>
+    </appender>
+
+    <appender class="org.apache.log4j.ConsoleAppender" name="consoleAppender">
+        <layout class="org.apache.log4j.PatternLayout">
+            <param value="%d %p [%c] - &lt;%m&gt;%n" name="ConversionPattern"/>
+        </layout>
+    </appender>
+
+    <logger name="hacktm16" additivity="false">
+        <level value="DEBUG"/>
+        <appender-ref ref="asyncAppenderFile"/>
+        <appender-ref ref="consoleAppender"/>
+    </logger>
+    <logger name="org.elasticsearch">
+        <level value="ERROR"/>
+    </logger>
+
+    <root>
+        <level value="DEBUG"/>
+        <appender-ref ref="asyncAppenderFile"/>
+        <appender-ref ref="consoleAppender"/>
+    </root>
+
+</log4j:configuration>
