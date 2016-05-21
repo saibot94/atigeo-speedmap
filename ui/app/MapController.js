@@ -7,7 +7,8 @@
 		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi'];
 		function MapController ($scope, uiGmapGoogleMapApi) {
 			var vm = this;
-         
+         	vm.heatLayer = null;
+
 			vm.map = {
 	            center: {
 	            latitude: 37.782551,
@@ -16,17 +17,21 @@
 	            zoom: 12,
 	            heatLayerCallback: function (layer) {
 	                //set the heat layers backend data
-	                var mockHeatLayer = new getMockHeatLayer(layer);
-	                console.log('created heat layer')
+	                vm.heatLayer  = new getMockHeatLayer(layer);
 	                },
 	            showHeat: true
-	        };			
+	        };		
+
+	        vm.setHeatLayerItemWeight = function(){
+	        	
+	        }
+
 	    }
 
-		function getMockHeatLayer(heatLayer) {
+		function getMockHeatLayer(heatLayer, initialWeight) {
 		    // Adding 500 Data Points
 		       var taxiData = [
-	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 2.5},
+	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 1.5},
 	        new google.maps.LatLng(37.782745, -122.444586),
 	        new google.maps.LatLng(37.782842, -122.443688),
 	        new google.maps.LatLng(37.782919, -122.442815),
@@ -529,5 +534,6 @@
     ];
 		    var pointArray = new google.maps.MVCArray(taxiData);
 		    heatLayer.setData(pointArray);
+		    return heatLayer
 	    };
 })();
