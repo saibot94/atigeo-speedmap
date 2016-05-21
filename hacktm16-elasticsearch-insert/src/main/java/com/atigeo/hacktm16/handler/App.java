@@ -25,7 +25,7 @@ public class App {
     private static String MONGO_DATABASE = "hacktm";
     private static String MONGO_COLLECTION = "drives";
 
-    private static String MONGO_HOST = "localhost";
+    private static String MONGO_HOST = "hack-mongo";
     private static int MONGO_PORT = 27017;
 
     private MongoClient mongoClient;
@@ -116,7 +116,6 @@ public class App {
 
         MongoCollection<Document> collection = mongoDatabase.getCollection(MONGO_COLLECTION);
 
-
         try {
             FileReader fileReader = new FileReader(fileName);
             FileWriter fileWriter = new FileWriter(archivedFile);
@@ -127,6 +126,9 @@ public class App {
             List<Document> documents = new ArrayList<>();
             while((line = bufferedReader.readLine()) != null) {
                 Document dbObject = processLine(line);
+                if(dbObject == null)
+                    continue;
+
                 documents.add(dbObject);
                 bufferedWriter.write(line);
             }
@@ -146,14 +148,14 @@ public class App {
     }
 
     private Document processLine(String line){
-        LOGGER.info(String.format("line read: %s", line));
+//        LOGGER.info(String.format("line read: %s", line));
         Document dbObject = null;
         try {
             ObjectMapper mapper = new ObjectMapper();
             ObjectNode jsonNode = mapper.readValue(line, ObjectNode.class);
 
             jsonNode = processJsonNode(jsonNode);
-            LOGGER.info(String.format("processed : %s", jsonNode.toString()));
+//            LOGGER.info(String.format("processed : %s", jsonNode.toString()));
 
             Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
 
@@ -161,8 +163,10 @@ public class App {
 
         } catch (IOException e) {
             LOGGER.error("json exception");
+            LOGGER.info(String.format("line read: %s", line));
         } catch (Exception e) {
             LOGGER.error("json exception");
+            LOGGER.info(String.format("line read: %s", line));
         }
         return dbObject;
     }
@@ -176,6 +180,11 @@ public class App {
 
         jsonNode = jsonNode.put("speedkmh", speedDoubleKmh);
         jsonNode = jsonNode.put("speedms",speedDoubleMs);
+
+        //longitude
+
+
+        //latitude
 
         //unix time
         JsonNode driveTimeValue = jsonNode.get("drivetime");
