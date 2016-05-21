@@ -1,7 +1,8 @@
 (function() {
 	'use strict';
 
-	var app = angular.module('SrcApp', ['nvd3','uiGmapgoogle-maps', 'ui.bootstrap', 'ngRoute']).config(
+	var app = angular.module('SrcApp', ['nvd3','uiGmapgoogle-maps', 'ui.bootstrap', 'ngRoute',
+	 'ngAnimate', 'ngMaterial', 'ngAria', 'rzModule']).config(
 	    ['uiGmapGoogleMapApiProvider', function(GoogleMapApiProviders) {
 	        GoogleMapApiProviders.configure({
 	            china: true,

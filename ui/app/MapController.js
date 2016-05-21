@@ -4,34 +4,87 @@
             angular.module('SrcApp')
                 .controller('MapController', MapController);
 
+
 		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi'];
 		function MapController ($scope, uiGmapGoogleMapApi) {
 			var vm = this;
          	vm.heatLayer = null;
+            vm.sliderHigh = 86400;
+            vm.sliderLow = 0;
+
+            vm.sliderOptions  = {
+              step: 60,
+              floor: 0,
+              ceil: 86400,
+              translate: function(value, sliderId, label) {
+                  switch (label) {
+                     case 'model':
+                      return parseTimestamp(value);
+                    case 'high':
+                      return parseTimestamp(value);
+                    default:
+                      return parseTimestamp(value);
+                  }
+                },
+               onChange: function(change) {
+                    var low = parseTimestamp(vm.sliderLow).split(":");
+                    var high = parseTimestamp(vm.sliderHigh).split(":");
+
+                    vm.changeHeatLayer(low, high)
+               }
+            };
+
+            vm.parseTimestamp = parseTimestamp;
 
 			vm.map = {
 	            center: {
 	            latitude: 37.782551,
 	            longitude: -122.445368
 	            },
-	            zoom: 12,
+	            zoom: 13,
 	            heatLayerCallback: function (layer) {
 	                //set the heat layers backend data
-	                vm.heatLayer  = new getMockHeatLayer(layer);
+	                vm.heatLayer  = getMockHeatLayer(layer, 1);
 	                },
 	            showHeat: true
 	        };		
 
-	        vm.setHeatLayerItemWeight = function(){
-	        	
+	        vm.changeHeatLayer = function(newlow, newhigh){
+	        	var low = Number(newlow[0]);
+	        	var high = Number(newhigh[0]);
+
+                vm.heatLayer = getMockHeatLayer(vm.heatLayer, high);
+
 	        }
 
 	    }
 
+
+	    function parseTimestamp(value) {
+	          var date = getCurrentDate();
+              var exactTime = new Date((date+value) * 1000);
+              var hours = exactTime.getHours();
+              var minutes = exactTime.getMinutes();
+              return (hours < 10 ? "0" + hours : hours) + ":" +  (minutes < 10 ? "0" + minutes : minutes);
+
+	    }
+
+
+
+        function getCurrentDate(){
+            var d = new Date();
+            d.setHours(d.getHours() - d.getHours());
+            d.setMinutes(d.getMinutes() - d.getMinutes());
+            d.setSeconds(d.getSeconds() - d.getSeconds());
+
+            return d/1000;
+        }
+
+
 		function getMockHeatLayer(heatLayer, initialWeight) {
 		    // Adding 500 Data Points
 		       var taxiData = [
-	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 1.5},
+	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: initialWeight},
 	        new google.maps.LatLng(37.782745, -122.444586),
 	        new google.maps.LatLng(37.782842, -122.443688),
 	        new google.maps.LatLng(37.782919, -122.442815),
