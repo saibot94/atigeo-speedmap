@@ -1,8 +1,8 @@
-(function(){
-		'use strict';
+    (function(){
+            'use strict';
 
-		angular.module('SrcApp')
-			.controller('MapController', MapController);
+            angular.module('SrcApp')
+                .controller('MapController', MapController);
 
 		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi'];
 		function MapController ($scope, uiGmapGoogleMapApi) {
