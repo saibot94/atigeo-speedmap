@@ -1,7 +1,15 @@
 (function() {
 	'use strict';
 
-	var app = angular.module('SrcApp', ['nvd3']);
+	var app = angular.module('SrcApp', ['nvd3','uiGmapgoogle-maps']).config(
+	    ['uiGmapGoogleMapApiProvider', function(GoogleMapApiProviders) {
+	        GoogleMapApiProviders.configure({
+	            china: true,
+        		libraries: 'weather,geometry,visualization'
+
+	        });
+	    }]
+	);
 
 
 	app.controller('MainController', MainController);
