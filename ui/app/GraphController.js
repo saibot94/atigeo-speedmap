@@ -12,10 +12,10 @@
 			vm.lineGraphOptions = {
 				chart: {
 					type: 'lineChart', 
-					height: 450,
+					height: 250,
 					margin :{ 
 						top: 30,
-						bottom: 30,
+						bottom: 50,
 						left: 20,
 						right: 20
 					},

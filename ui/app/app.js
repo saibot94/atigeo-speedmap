@@ -1,7 +1,7 @@
 (function() {
 	'use strict';
 
-	var app = angular.module('SrcApp', ['nvd3','uiGmapgoogle-maps', 'ui.bootstrap']).config(
+	var app = angular.module('SrcApp', ['nvd3','uiGmapgoogle-maps', 'ui.bootstrap', 'ngRoute']).config(
 	    ['uiGmapGoogleMapApiProvider', function(GoogleMapApiProviders) {
 	        GoogleMapApiProviders.configure({
 	            china: true,
@@ -10,6 +10,23 @@
 	        });
 	    }]
 	);
+
+
+	app.config(['$routeProvider',
+      function($routeProvider) {
+        $routeProvider.
+          when('/', {
+            templateUrl: 'templates/dashboard.html',
+            controller: 'MainController'
+          }).
+          when('/analytics', {
+            templateUrl: 'templates/analytics.html',
+            controller: 'AnalyticsController'
+          }).
+          otherwise({
+            redirectTo: '/'
+          });
+    }]);
 
 
 	app.controller('MainController', MainController);
