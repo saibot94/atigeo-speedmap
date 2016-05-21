@@ -1,36 +1,47 @@
-<div class="row">
-    <div class="col-md-10 col-md-push-1">
+<!--<div class="row">-->
+    <!--<div class="col-md-12 col-md-push-1">-->
+
+        <!--<br>-->
+        <!--<form style="clear:both;">-->
+            <!--<div class="form-group">-->
+                <!--<label>Date from: </label>-->
+                <!--<input class="form-control" type="text" ng-model="vm.formModel.dateFrom">-->
+            <!--</div>-->
+            <!--<div class="form-group">-->
+                <!--<label>Date to: </label>-->
+                <!--<input class="form-control" type="text" ng-model="vm.formModel.dateTo">-->
+            <!--</div>-->
+            <!--<button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>-->
+        <!--</form>-->
+
+
+    <!--</div>-->
+
+<!--</div>-->
+
+<div class="row" ng-controller="MapController as mapController">
+    <div class="col-md-12 col-md-push-1">
         <h2 class="ng-cloak" style="color: #1E90FF">
             Speedmap
         </h2>
-        <br>
-        <form style="clear:both;">
-            <div class="form-group">
-                <label>Date from: </label>
-                <input class="form-control" type="text" ng-model="vm.formModel.dateFrom">
-            </div>
-            <div class="form-group">
-                <label>Date to: </label>
-                <input class="form-control" type="text" ng-model="vm.formModel.dateTo">
-            </div>
-            <button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>
-        </form>
-
-
-    </div>
-
-</div>
-
-<div class="row" ng-controller="MapController as mapController">
-    <div class="col-md-10 col-md-push-1">
         <div class="checkbox checkbox-primary">
             <input type="checkbox" id="checkbox1" class="styled" ng-model="mapController.map.showHeat">
-                <label for="checkbox1">
-                    Enable heatmap
-                </label>
+            <label for="checkbox1" class="checkbox-text-enable-heat">
+                Enable heatmap
+            </label>
         </div>
+
+        <div>
+            <span class="time-indicator"><span ng-bind="mapController.parseTimestamp(mapController.sliderLow)"></span> -
+                <span ng-bind="mapController.parseTimestamp(mapController.sliderHigh)"></span> </span>
+            <rzslider rz-slider-model="mapController.sliderLow"
+                      rz-slider-high="mapController.sliderHigh"
+                      rz-slider-options="mapController.sliderOptions"></rzslider>
+            <!--<md-slider transform-test ng-model="mapController.sliderValue" flex min="0" max="86400" step="60" id="red-slider" class></md-slider>-->
+        </div>
+
     </div>
-    <div class="col-md-10 col-md-push-1">
+    <div class="col-md-12 col-md-push-1">
         <br>
         <ui-gmap-google-map center='mapController.map.center' zoom='mapController.map.zoom'>
             <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="mapController.map.showHeat"
