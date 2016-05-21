@@ -19,7 +19,11 @@ body {
 
     }
    .main-content {
-    margin-left: 180px;
+    width: 80%
+   }
+
+   .main-content-collapsed {
+    margin-left: 40px;
    }
 
 
@@ -38,7 +42,9 @@ body {
         text-align: center;
 
            }
-
+         .is-navbar-collapsed > .container-fluid > .sidebar-nav > li {
+              margin-left: 5px;
+         }
         .sidebar-nav a {
             margin: 1px;
             margin-left: 0px;
@@ -49,11 +55,13 @@ body {
             background: #E4F1FE !important;
         }
 
-
-
         .sidebar-nav li .glyphicon {
         font-size: 1.2em;
         }
+
+          .is-navbar-collapsed > .container-fluid > .sidebar-nav li  .glyphicon  {
+            margin-left: -15px;
+          }
 
         .sidebar-nav a:hover {
                border: 1px solid;
@@ -67,6 +75,14 @@ body {
     margin-bottom: 20px;
     align: center,
     width:150px;height:100px;
+  }
+
+  .our-logo-smallish{
+      margin-top: 20px;
+    padding-left: 0;
+    margin-bottom: 20px;
+    align: center,
+    width:55px;height:30px;
   }
 
 .collapse-sidebar {
@@ -96,6 +112,11 @@ body {
 }
 
 
+.is-navbar-collapsed + .main-content {
+    margin-left: 40px;
+}
+
+
 /* charts */
 .chart-wrapper {
     clear: both;
@@ -105,6 +126,22 @@ body {
 }
 
 
+#red-slider .md-thumb:after, #red-slider .md-track{
+    background-color: #1E90FF !important;
+    border-color: #1E90FF !important;
+}
+#red-slider .md-focus-thumb, #red-slider .md-focus-ring{
+    background-color: #1E90FF;
+}
+
+
+
+.time-indicator {
+text-align: center;
+    margin-left: 45%;
+    color:#1E90FF;
+    font-size: 24px;
+}
 
 .chart-header {
     background-color: #ffffff;
