@@ -42,6 +42,9 @@
 #include "LogWriterModPlugin.h"
 #include <iostream>
 #include <ctime>
+#include <fstream>
+#include <string>
+#include <string.h>
 
 
 using namespace Tasks::AERO_HACK_TM_Task; // Tasks part mandatory for runtask
@@ -55,7 +58,9 @@ std::string PLUGIN_NAME = "AERO_HackTM";    // mandatory/standard for runtask
 std::string PLUGIN_DESC = "A task which integrates the HackTM user app inside a Runtask framework";    // mandatory/standard for runtask
 
 
-
+//path to where to dump the data
+std::string dump_filename = "C:\\drive_dump_tmp";
+std::ofstream outFile;
 
 
 //////////////////////////////////////////////////////////
@@ -108,8 +113,35 @@ long CModPlugIn::wxEVT_OPEN(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    /* Set up the log writer*/
    LogWriterModPlugin *logWriter = new LogWriterModPlugin(this);
    CLogDevice::get()->addLogWriter(logWriter);
-   LOG_INFO("AERO_HackTM build %s %s", __DATE__, __TIME__);
+   LOG_INFO("AERO_HackTM #Ati build %s %s", __DATE__, __TIME__);
 
+	/* Set up the dump file*/
+ 
+   LOG_INFO("trying to open file %s", dump_filename.c_str());
+   try{
+
+	   time_t rawtime;
+	   time (&rawtime);
+	   struct tm * timeinfo = localtime(&rawtime);
+	    char bufferTime [150];
+		strftime(bufferTime,80,"%Y%m%d%H%M%S", timeinfo);
+		std::string time(bufferTime); 
+		std::string fileName = "C:\\dev\\drive_dump_tmp_" + time + ".json";
+		outFile.open(fileName.c_str());
+
+	   if (!outFile) 
+	   { 
+		   LOG_ERROR("Error opening writing to ..."); 
+	   }
+	   else 
+	   {
+		   LOG_INFO("Filedump open");
+	   }
+   }
+   catch(const std::exception&)
+   {
+	   LOG_ERROR("exception while opening file" );
+   }
    return(0);
 };
 
@@ -118,6 +150,14 @@ long CModPlugIn::wxEVT_OPEN(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 long CModPlugIn::wxEVT_CLOSE(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 {
    TextPrint2Con("wxEVT_CLOSE was called"); arg_obj; ret_obj;
+
+   if (!outFile) 
+   { std::cerr<<"Error writing to ..."<<std::endl; } 
+   else 
+   {
+	   outFile.close();
+   }
+
    return(0);
 };
 
@@ -155,7 +195,7 @@ long CModPlugIn::wxEVT_DISCONNECT(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
   return(0);
 };
 
-void dump_data_json()
+void dump_data_json(std::string jsonEntry)
 {
 
 }
@@ -217,13 +257,13 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    }
 
    LOG_INFO("GPS_Data.f_Latitude: %f", RAD2DEG(GPS_Data.f_LatitudeRad));
-   char bufferLat [50];
+   char bufferLat [150];
    sprintf (bufferLat, "%f", RAD2DEG(GPS_Data.f_LatitudeRad));
    std::string latitude(bufferLat); 
    dataJson += "\"latitude\":" + latitude + ",";
 
    LOG_INFO("GPS_Data.f_Longitude: %f", RAD2DEG(GPS_Data.f_LongitudeRad));
-   char bufferLong [50];
+   char bufferLong [150];
    sprintf (bufferLong, "%f", RAD2DEG(GPS_Data.f_LongitudeRad));
    std::string longitude(bufferLong); 
    dataJson += "\"longitude\":" + longitude + ",";
@@ -231,13 +271,13 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    if (LRR_FC_TrafParticList.u_NumTrafficParticipants > 0)
    {
 	   LOG_INFO("LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X: %f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X);
-	   char bufferLong [50];
+	   char bufferLong [150];
 		sprintf (bufferLong, "%f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X);
 		std::string longitude(bufferLong); 
 		dataJson += "\"trafficx\":" + longitude + ",";
        
 		LOG_INFO("LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y: %f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y);
-	   char bufferLat [50];
+	   char bufferLat [150];
 		sprintf (bufferLat, "%f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y);
 		std::string latitude(bufferLat); 
 		dataJson += "\"trafficy\":" + latitude + ",";
@@ -251,16 +291,16 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    if (SCAM_FC_TrafParticList.u_NumTrafficParticipants > 0)
    {
 	   LOG_INFO("SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length: %.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length.f_Value);
-	   char bufferLong [50];
+	   char bufferLong [150];
 		sprintf (bufferLong, "%.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length.f_Value);
 		std::string latitude(bufferLong); 
-		dataJson += "\"trafficy\":" + latitude + ",";
+		dataJson += "\"trafficlength\":" + latitude + ",";
 
 	   LOG_INFO("SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height: %.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height.f_Value);
-	   char buffeLat [50];
+	   char buffeLat [150];
 	   sprintf (buffeLat, "%.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height.f_Value);
 	   std::string latitudeY(buffeLat); 
-       dataJson += "\"trafficy\":" + latitudeY + ",";
+       dataJson += "\"trafficheigth\":" + latitudeY + ",";
    }
    else
    {
@@ -268,22 +308,32 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    }
 
   
-   time_t t = time(0);
-   char bufferTime [50];
-   sprintf (bufferTime, "%s", t);
+   time_t rawtime;
+   time (&rawtime);
+   struct tm * timeinfo = localtime(&rawtime);
+ 
+   char bufferTime [150];
+   strftime(bufferTime,80,"%Y%m%d%H%M%S.000", timeinfo);
    std::string time(bufferTime); 
    dataJson += "\"drivetime\":" + time + ",";
 
    char bufferId [50];
-   sprintf (bufferId, "%s", "1234567890");
+   sprintf (bufferId, "%d", 1234567890);
    std::string bufid(bufferId); 
    dataJson += "\"driver\":" + bufid + "";
 
-   dataJson += "}";
+   dataJson += "}\n";
 
    LOG_INFO("%s", dataJson.c_str());
 
-    LOG_INFO("----------------------------------------------\n");
+   if (!outFile) { std::cerr<<"Error writing to ..."<<std::endl; } 
+   else 
+   {
+	   LOG_INFO("writing to %s", dump_filename);
+	   outFile << dataJson;
+   }
+
+   LOG_INFO("----------------------------------------------\n");
 
    /*********************************************************************************************************************************/
    // End of DEMO code
