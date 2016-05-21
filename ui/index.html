@@ -1,264 +1,76 @@
-<!DOCTYPE html>
-<html>
+	<!DOCTYPE html>
+	<html>
 
-<head>
-	<meta charset="UTF-8">
-	<title>Speedmap - Atigeo</title>
+	<head>
+		<meta charset="UTF-8">
+		<title>Speedmap - Atigeo</title>
 
-	<link rel="stylesheet" href="css/bootstrap.css">
-	<link rel="stylesheet" href="css/bootstrap-theme.css">
+		<link rel="stylesheet" href="css/bootstrap.css">
+		<link rel="stylesheet" href="css/bootstrap-theme.css">
 
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script src="js/nv.d3.js"></script>
-	<script src="js/jquery-2.1.4.js"></script>
-	<script src="js/bootstrap.js"></script>
+	    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	    <script src="js/nv.d3.js"></script>
+		<script src="js/jquery-2.1.4.js"></script>
+		<script src="js/bootstrap.js"></script>
 
-	<script src="js/angular.js"></script>
-	<script src="js/angular-nvd3.min.js"></script>
+		<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBAGWk4cH9OQt1KScJPNMsn72ThtBCgdHo&libraries=visualization,weather,geometry"
+			></script>
+        <script src="js/lodash.min.js">	</script>
+		<script src="js/angular.js"></script>
+		<script src="js/angular-nvd3.min.js"></script>
+		<script src="js/angular-simple-logger.js"></script>
+		<script src="js/ui-bootstrap.min.js"></script>
 
-	<link rel="stylesheet" href="css/nv.d3.min.css">
 
-</head>
+		<link rel="stylesheet" href="css/nv.d3.min.css">
+		<style>
+	      html, body {
+	        height: 100%;
+	        margin: 0;
+	        padding: 0;
+	      }
+	      .angular-google-map-container { height: 400px; }
 
-<body ng-app="SrcApp">
-	<div class="container" ng-controller="MainController as vm">
-		<div class="col-md-10 col-md-push-1">
+		</style>
+	</head>
 
-			<h2 class="ng-cloak" style="color: #1E90FF">
-			Speedmap		
-		</h2>
-		<img src="img/xPatternsLogo.jpg" style="width:150px;height:100px" class="pull-right">
-		<br>
-		<form style="clear:both;">
-			<div class="form-group">
-				<label>Date from: </label>
-				<input class="form-control" type="text" ng-model="vm.formModel.dateFrom">
+	<body ng-app="SrcApp">
+		<div class="container" ng-controller="MainController as vm">
+			<div class="row">
+				<div class="col-md-10 col-md-push-1">
+
+					<h2 class="ng-cloak" style="color: #1E90FF">
+					Speedmap		
+					</h2>
+				<img src="img/xPatternsLogo.jpg" style="width:150px;height:100px" class="pull-right">
+				<br>
+				<form style="clear:both;">
+					<div class="form-group">
+						<label>Date from: </label>
+						<input class="form-control" type="text" ng-model="vm.formModel.dateFrom">
+					</div>
+					<div class="form-group">
+						<label>Date to: </label>
+						<input class="form-control" type="text" ng-model="vm.formModel.dateTo">	
+					</div>
+					<button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>
+				</form>
+				<br>
+					<div class="well well-sm">
+						Note: the date format must be: "yyyy-mm-dd". <br>If either field is empty, it just gets the aggregates for all periods <br>If dates are inserted, then the aggregates will be recomputed (which might take a while)
+					</div>
+				</div>
 			</div>
-			<div class="form-group">
-				<label>Date to: </label>
-				<input class="form-control" type="text" ng-model="vm.formModel.dateTo">	
+			<div class="row" ng-controller="MapController as mapController">
+				<div class="col-md-10 col-md-push-1">
+					
+					<br>
+					<ui-gmap-google-map center='mapController.map.center' zoom='mapController.map.zoom'>
+						    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="mapController.map.showHeat"
+						     onCreated="mapController.map.heatLayerCallback"></ui-gmap-layer>
+					</ui-gmap-google-map>
+				</div>
 			</div>
-			<button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>
-		</form>
-		<br>
-			<div class="well well-sm">
-				Note: the date format must be: "yyyy-mm-dd". <br>If either field is empty, it just gets the aggregates for all periods <br>If dates are inserted, then the aggregates will be recomputed (which might take a while)
-			</div>
-		</div>
-		<hr ng-if="vm.aggregatesByLanguageVeniceNoIt.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByLanguageVeniceNoIt.length > 0">
-			<thead>
-				<tr>
-					<td colspan="5">
-						<b>Tweets in the Venice region (cities) not in italian</b>
-					</td>
-				</tr>
-				<tr>
-					<td>Name</td>
-					<td>Least used language</td>
-					<td>Most used language</td>
-					<td>Times least used language appears</td>
-					<td>Times most used language appears</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByLanguageVeniceNoIt">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.leastUsedLanguage}}</td>
-					<td>{{aggregate.mostUsedLanguage}}</td>
-					<td>{{aggregate.leastUsedLanguageTimes}}</td>
-					<td>{{aggregate.mostUsedLanguageTimes}}</td>
-				</tr>
-			</tbody>
-		</table>
-		<!-- vm.aggregatesByLanguage -->
-
-		<hr ng-if="vm.aggregatesByLanguage.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByLanguage.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Tweets in total by language</b>
-					</td>
-				</tr>
-				<tr>
-					<td>Language code</td>
-					<td>Number of tweets</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByLanguage">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.count}}</td>
-				</tr>
-			</tbody>
-		</table>
-		<!-- vm.aggregatesByCountry -->
-		<hr>
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByCountry.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Tweets in total by country appearance in "place"</b>
-					</td>
-				</tr>
-				<tr>
-					<td>Country  name</td>
-					<td>Number of tweets</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByCountry">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.appearances}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- vm.aggregatesByCity -->
-		<hr  ng-if="vm.aggregatesByCity.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByCity.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Tweets in total by city appearance in "place" (limited to the top 30 results showing)</b>
-					</td>
-				</tr>
-				<tr>
-					<td>Country  name</td>
-					<td>Number of tweets</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByCity | limitTo: 30">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.appearances}}</td>
-				</tr>
-			</tbody>
-		</table>
-			<!-- vm.aggregatesByUserHighestRatio -->
-		<hr ng-if="vm.aggregatesByUserHighestRatio.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByUserHighestRatio.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Users having the highest follower / friend ratios</b>
-					</td>
-				</tr>
-				<tr>
-					<td>User screen name</td>
-					<td>Followers count</td>
-					<td>Friends count</td>
-					<td>Ratio</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByUserHighestRatio">
-					<td>{{aggregate.screen_name}}</td>
-					<td>{{aggregate.followers_count}}</td>
-					<td>{{aggregate.friends_count}}</td>
-					<td>{{aggregate.ratio | number: 1}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- vm.aggregatesByUserMostTweets -->
-		<hr ng-if="vm.aggregatesByUserMostTweets.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByUserMostTweets.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Users having the highest number of tweets written</b>
-					</td>
-				</tr>
-				<tr>
-					<td>User screen name</td>
-					<td>Tweet count</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByUserMostTweets">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.tweet_count}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- vm.aggregatesByUserMostFollowers -->
-		<hr ng-if="vm.aggregatesByUserMostFollowers.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByUserMostFollowers.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Users having the highest number of followers</b>
-					</td>
-				</tr>
-				<tr>
-					<td>User screen name</td>
-					<td>Follower count</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByUserMostFollowers">
-					<td>{{aggregate._id}}</td>
-					<td>{{aggregate.follower_count}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-		<!-- aggregatesByHashtag -->
-		<hr ng-if="vm.aggregatesByUserMostFollowers.length > 0">
-		<table class="table table-bordered table-hover" ng-if="vm.aggregatesByUserMostFollowers.length > 0">
-			<thead>
-				<tr>
-					<td colspan="2">
-						<b>Hashtag aggregates</b>
-					</td>
-				</tr>
-				<tr>
-					<td>Hashtag name</td>
-					<td>Frequency</td>
-					<td>Occurences</td>
-				</tr>
-			</thead>
-			<tbody>
-				<tr ng-repeat="aggregate in vm.aggregatesByHashtag">
-					<td>{{aggregate.hashtag_name}}</td>
-					<td>{{aggregate.frequency | number: 1}}% of tweets</td>
-					<td>{{aggregate.occurences}}</td>
-				</tr>
-			</tbody>
-		</table>
-
-
-			<!-- <form>
-				<input class="form-control" ng-model="vm.searchString" type="text" style="width: 100%">
-
-				<label>
-					<input class="ng-cloak" type="radio" ng-model="vm.searchOption" value="direct"> Direct search
-				</label>
-
-				<label>
-					<input class="ng-cloak" type="radio" ng-model="vm.searchOption" value="inverted_term"> Inverted search (term)
-				</label>
-
-				<label>
-					<input type="radio" ng-model="vm.searchOption" value="inverted_doc"> Inverted search (doc)
-				</label>
-				<button class="btn btn-primary pull-right" type="submit" ng-click="vm.search()">Search</button>
-			</form>
-			<h3 class="text-info" ng-cloak ng-if="vm.searching === true">Searching...</h3>
-			<p class="ng-cloak" ng-if="vm.searchResults != null"><b>
-			Total results: {{vm.responseTotal}} <span ng-if="vm.scopeLimit < vm.responseTotal">(showing first {{vm.scopeLimit}})</span>
-		</b></p>
-			<table class="table table-hover table-bordered ng-cloak" ng-if="vm.searchResults.length > 0">
-				<tr class="ng-cloak" ng-repeat="searchResult in vm.searchResults | limitTo: vm.scopeLimit track by $index">
-					<td>{{$index+1}}</td>
-					<td><b>{{vm.sanitize(searchResult)}}</b></td>
-					<tr>
-			</table>
-			<p> <a href ng-click="vm.increaseLimit()" ng-if="vm.scopeLimit < vm.responseTotal"> See more... </a>
-			</p> -->
 		</div>
 
 		<div class="container" ng-controller="GraphController as vm">
@@ -269,16 +81,17 @@
 			</div>
 			
 		</div>
+		</div>
+		<br>
 
-	</div>
+		<script src="app/app.js"></script>
+		<script src="app/GraphController.js"></script>
+		<script src="app/ApiAggregateService.js"></script>
+		<script src="app/MapController.js"></script>
 
-	<!--<script src="js/nv.d3.min.js" charset="utf-8"></script>-->
+		
+		<script src="js/angular-google-maps.min.js"></script>
 
+	</body>
 
-	<script src="app/app.js"></script>
-	<script src="app/GraphController.js"></script>
-	<script src="app/ApiAggregateService.js"></script>
-
-</body>
-
-</html>
+	</html>
