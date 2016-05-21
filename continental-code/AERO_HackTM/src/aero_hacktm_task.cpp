@@ -62,6 +62,8 @@ std::string PLUGIN_DESC = "A task which integrates the HackTM user app inside a 
 std::string dump_filename = "C:\\drive_dump_tmp";
 std::ofstream outFile;
 
+std::string lastTime = "";
+int callCounter = 0;
 
 //////////////////////////////////////////////////////////
 //           class CModPlugIn definition
@@ -313,9 +315,23 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    struct tm * timeinfo = localtime(&rawtime);
  
    char bufferTime [150];
-   strftime(bufferTime,80,"%Y%m%d%H%M%S.000", timeinfo);
+   strftime(bufferTime,80,"%Y%m%d%H%M%S", timeinfo);
+
    std::string time(bufferTime); 
-   dataJson += "\"drivetime\":" + time + ",";
+   if (time.compare(lastTime) != 0)
+   {
+	   lastTime = time;
+	   callCounter = 0;
+   }
+   else 
+   {
+	   callCounter ++;
+   }
+
+   sprintf (bufferTime, "%s%d", time.c_str(), callCounter);
+   std::string timefinal(bufferTime); 
+
+   dataJson += "\"drivetime\":" + timefinal + ",";
 
    char bufferId [50];
    sprintf (bufferId, "%d", 1234567890);
