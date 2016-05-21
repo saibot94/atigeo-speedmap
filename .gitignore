@@ -31,3 +31,6 @@
 *.app
 *.opensdf
 *.sdf
+*.lastbuildstate
+*.idb
+*.exp

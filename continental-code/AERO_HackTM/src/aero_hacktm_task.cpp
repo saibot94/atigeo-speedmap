@@ -40,6 +40,9 @@
 #include "aero_hacktm_task.h"
 #include "VehicleConfig.h"
 #include "LogWriterModPlugin.h"
+#include <iostream>
+#include <ctime>
+
 
 using namespace Tasks::AERO_HACK_TM_Task; // Tasks part mandatory for runtask
 
@@ -50,6 +53,8 @@ using namespace Tasks::AERO_HACK_TM_Task; // Tasks part mandatory for runtask
 std::string PLUGIN_NAME = "AERO_HackTM";    // mandatory/standard for runtask
 //! Additional plugin description
 std::string PLUGIN_DESC = "A task which integrates the HackTM user app inside a Runtask framework";    // mandatory/standard for runtask
+
+
 
 
 
@@ -150,6 +155,12 @@ long CModPlugIn::wxEVT_DISCONNECT(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
   return(0);
 };
 
+void dump_data_json()
+{
+
+}
+
+
 
 //! Event STEP will be called every n-th ms depending from host application settings
 long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
@@ -160,21 +171,76 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 
    LOG_INFO("ATIGEO#HACK");
 
+   std::string dataJson = "{";	
+
    /*********************************************************************************************************************************/
    // PLEASE INSERT THE BEST HACK_TM CODE HERE!
    /*********************************************************************************************************************************/
-   if (VEH_DYN_Data.SpeedDisplayed.e_SignalStatus == AERO_SIGNAL_STATUS_OK) LOG_INFO("VehDyn.Speed: %.1f", VEH_DYN_Data.SpeedDisplayed.f_Value);
-   if (VEH_DYN_Data.AccPedalPos.e_SignalStatus == AERO_SIGNAL_STATUS_OK) LOG_INFO("VehDyn.AccPedalPos: %.1f", VEH_DYN_Data.AccPedalPos.f_Value);
-   if (VEH_DYN_Data.EngRPM.e_SignalStatus == AERO_SIGNAL_STATUS_OK) LOG_INFO("VehDyn.EngRPM: %.1f", VEH_DYN_Data.EngRPM.f_Value);
-   if (VEH_DYN_Data.Yawrate.e_SignalStatus == AERO_SIGNAL_STATUS_OK) LOG_INFO("VehDyn.Yawrate: %.1f", VEH_DYN_Data.Yawrate.f_Value);
-   else LOG_INFO("VEH_DYN_Data not available");
+   if (VEH_DYN_Data.SpeedDisplayed.e_SignalStatus == AERO_SIGNAL_STATUS_OK)
+   { 
+		LOG_INFO("VehDyn.Speed: %.1f", VEH_DYN_Data.SpeedDisplayed.f_Value);
+		char buffer [50];
+		sprintf (buffer, "%.1f", VEH_DYN_Data.SpeedDisplayed.f_Value);
+		std::string speed(buffer); 
+		dataJson += "\"speed\":" + speed + ",";
+   }
+
+   if (VEH_DYN_Data.AccPedalPos.e_SignalStatus == AERO_SIGNAL_STATUS_OK)
+   { 
+	   LOG_INFO("VehDyn.AccPedalPos: %.1f", VEH_DYN_Data.AccPedalPos.f_Value);
+	    char buffer [50];
+		sprintf (buffer, "%.1f", VEH_DYN_Data.AccPedalPos.f_Value);
+		std::string pedal(buffer); 
+		dataJson += "\"pedal\":" + pedal + ",";
+   }
+
+   if (VEH_DYN_Data.EngRPM.e_SignalStatus == AERO_SIGNAL_STATUS_OK) 
+   {
+	   LOG_INFO("VehDyn.EngRPM: %.1f", VEH_DYN_Data.EngRPM.f_Value);
+	   char buffer [50];
+		sprintf (buffer, "%.1f", VEH_DYN_Data.EngRPM.f_Value);
+		std::string rpm(buffer); 
+		dataJson += "\"rpm\":" + rpm + ",";
+   }
+
+   if (VEH_DYN_Data.Yawrate.e_SignalStatus == AERO_SIGNAL_STATUS_OK)
+   { 
+	   LOG_INFO("VehDyn.Yawrate: %.1f", VEH_DYN_Data.Yawrate.f_Value);
+	   char buffer [50];
+		sprintf (buffer, "%.1f", VEH_DYN_Data.Yawrate.f_Value);
+		std::string yawrate(buffer); 
+		dataJson += "\"yawrate\":" + yawrate + ",";
+   }
+   else 
+   {
+		   LOG_INFO("VEH_DYN_Data not available");
+   }
+
    LOG_INFO("GPS_Data.f_Latitude: %f", RAD2DEG(GPS_Data.f_LatitudeRad));
+   char bufferLat [50];
+   sprintf (bufferLat, "%f", RAD2DEG(GPS_Data.f_LatitudeRad));
+   std::string latitude(bufferLat); 
+   dataJson += "\"latitude\":" + latitude + ",";
+
    LOG_INFO("GPS_Data.f_Longitude: %f", RAD2DEG(GPS_Data.f_LongitudeRad));
+   char bufferLong [50];
+   sprintf (bufferLong, "%f", RAD2DEG(GPS_Data.f_LongitudeRad));
+   std::string longitude(bufferLong); 
+   dataJson += "\"longitude\":" + longitude + ",";
 
    if (LRR_FC_TrafParticList.u_NumTrafficParticipants > 0)
    {
 	   LOG_INFO("LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X: %f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X);
-       LOG_INFO("LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y: %f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y);
+	   char bufferLong [50];
+		sprintf (bufferLong, "%f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_X);
+		std::string longitude(bufferLong); 
+		dataJson += "\"trafficx\":" + longitude + ",";
+       
+		LOG_INFO("LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y: %f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y);
+	   char bufferLat [50];
+		sprintf (bufferLat, "%f", LRR_FC_TrafParticList.TrafPart[0].DynProp.Velocity.f_Y);
+		std::string latitude(bufferLat); 
+		dataJson += "\"trafficy\":" + latitude + ",";
    }
    else
    {
@@ -185,15 +251,39 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    if (SCAM_FC_TrafParticList.u_NumTrafficParticipants > 0)
    {
 	   LOG_INFO("SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length: %.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length.f_Value);
+	   char bufferLong [50];
+		sprintf (bufferLong, "%.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Length.f_Value);
+		std::string latitude(bufferLong); 
+		dataJson += "\"trafficy\":" + latitude + ",";
+
 	   LOG_INFO("SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height: %.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height.f_Value);
+	   char buffeLat [50];
+	   sprintf (buffeLat, "%.1f", SCAM_FC_TrafParticList.TrafPart[0].GeomProp.Height.f_Value);
+	   std::string latitudeY(buffeLat); 
+       dataJson += "\"trafficy\":" + latitudeY + ",";
    }
    else
    {
        LOG_INFO("SCAM_FC_TrafParticList.u_NumTrafficParticipants: %d", SCAM_FC_TrafParticList.u_NumTrafficParticipants);
    }
 
-   LOG_INFO("----------------------------------------------\n");
+  
+   time_t t = time(0);
+   char bufferTime [50];
+   sprintf (bufferTime, "%s", t);
+   std::string time(bufferTime); 
+   dataJson += "\"drivetime\":" + time + ",";
 
+   char bufferId [50];
+   sprintf (bufferId, "%s", "1234567890");
+   std::string bufid(bufferId); 
+   dataJson += "\"driver\":" + bufid + "";
+
+   dataJson += "}";
+
+   LOG_INFO("%s", dataJson.c_str());
+
+    LOG_INFO("----------------------------------------------\n");
 
    /*********************************************************************************************************************************/
    // End of DEMO code
