@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.util.JSON;
 import org.apache.log4j.PropertyConfigurator;
 import org.bson.Document;
 import org.slf4j.Logger;
@@ -22,6 +21,12 @@ import java.util.*;
 public class App {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
+
+    private static String MONGO_DATABASE = "hacktm";
+    private static String MONGO_COLLECTION = "drives";
+
+    private static String MONGO_HOST = "localhost";
+    private static int MONGO_PORT = 27017;
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
@@ -41,6 +46,7 @@ public class App {
 
         try {
             app.connectMongoDb();
+            app.checkCollection();
         } catch (UnknownHostException e) {
            LOGGER.error("mongo connection", e);
             return;
@@ -58,7 +64,17 @@ public class App {
     private  void connectMongoDb() throws UnknownHostException {
         mongoClient = establishESConnection();
 
-        mongoDatabase = mongoClient.getDatabase("hacktm");
+        mongoDatabase = mongoClient.getDatabase(MONGO_DATABASE);
+    }
+
+
+
+
+    private void checkCollection(){
+        MongoCollection<Document> collection = mongoDatabase.getCollection(MONGO_COLLECTION);
+        if(collection == null){
+            mongoDatabase.createCollection(MONGO_COLLECTION);
+        }
     }
 
     private void crawlDirectory(String dumpDirectoryPath){
@@ -98,7 +114,7 @@ public class App {
     private void processFile(String fileName, String archivedFile){
         LOGGER.info(String.format("PROCESSING FILE %s", fileName));
 
-        MongoCollection<Document> collection = mongoDatabase.getCollection("people");
+        MongoCollection<Document> collection = mongoDatabase.getCollection(MONGO_COLLECTION);
 
 
         try {
@@ -137,10 +153,11 @@ public class App {
             ObjectNode jsonNode = mapper.readValue(line, ObjectNode.class);
 
             jsonNode = processJsonNode(jsonNode);
-            LOGGER.info(String.format("processed : %s", jsonNode.asText()));
+            LOGGER.info(String.format("processed : %s", jsonNode.toString()));
 
-            dbObject = (Document) JSON.parse(jsonNode.toString());
+            Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
 
+            dbObject = new Document(result);
 
         } catch (IOException e) {
             LOGGER.error("json exception");
@@ -191,7 +208,7 @@ public class App {
 
 
     private MongoClient establishESConnection() throws UnknownHostException {
-        MongoClient mongo = new MongoClient("hack-es", 27017);
+        MongoClient mongo = new MongoClient(MONGO_HOST, MONGO_PORT);
         return mongo;
     }
 
