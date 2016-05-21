@@ -1,4 +1,5 @@
 .DS_Store
+
 *.tlog
 
 # Compiled Object files
@@ -34,3 +35,7 @@
 *.lastbuildstate
 *.idb
 *.exp
+=======
+.idea
+
+
