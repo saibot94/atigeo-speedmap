@@ -1,0 +1,130 @@
+body {
+    font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+    /*background-color: #2f4050;*/
+    font-size: 13px;
+    color: #676a6c;
+    overflow-x: hidden;
+}
+.container {
+    padding: 0;
+
+}
+
+.navbar-fixed-side{
+ position: fixed;
+    height: 100%;
+    width: 200px;
+    left: 0;
+    border-color: #2f4050
+
+    }
+   .main-content {
+    margin-left: 180px;
+   }
+
+
+    .sidebar-nav{
+    width: 80%;
+        left: 2px;
+        margin-top: 20px;
+    }
+
+        .sidebar-nav > li {
+        width: 100%;
+        width: 100%;
+        padding-bottom: 6px;
+
+        margin-left: 15px;
+        text-align: center;
+
+           }
+
+        .sidebar-nav a {
+            margin: 1px;
+            margin-left: 0px;
+            padding-left: 0px;
+        }
+
+        .sidebar-nav > li.active > a {
+            background: #E4F1FE !important;
+        }
+
+
+
+        .sidebar-nav li .glyphicon {
+        font-size: 1.2em;
+        }
+
+        .sidebar-nav a:hover {
+               border: 1px solid;
+                border-color: #d1d9dd;
+
+        }
+
+  .our-logo{
+    margin-top: 20px;
+    padding-left: 15px;
+    margin-bottom: 20px;
+    align: center,
+    width:150px;height:100px;
+  }
+
+.collapse-sidebar {
+    position: fixed;
+    font-size: 3.5em;
+    bottom: 15px;
+    left: 140px;
+}
+
+.collapse-sidebar:hover {
+    color: #3498DB
+}
+
+.expand-sidebar {
+    position: fixed;
+    font-size: 3.5em;
+    bottom: 15px;
+     left: 20px;
+}
+
+.expand-sidebar:hover {
+    color: #3498DB
+}
+
+.is-navbar-collapsed {
+    width: 70px;
+}
+
+
+/* charts */
+.chart-wrapper {
+    clear: both;
+    margin-bottom: 25px;
+    margin-top: 0;
+    padding: 0;
+}
+
+
+
+.chart-header {
+    background-color: #ffffff;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 3px 0 0;
+    color: inherit;
+    margin-bottom: 0;
+    padding: 14px 15px 7px;
+    min-height: 48px;
+   }
+
+  .chart-content {
+      background-color: #ffffff;
+    color: inherit;
+    padding: 15px 20px 20px 20px;
+    border-color: #e7eaec;
+    border-image: none;
+    border-style: solid solid none;
+    border-width: 1px 0;
+
+   }
