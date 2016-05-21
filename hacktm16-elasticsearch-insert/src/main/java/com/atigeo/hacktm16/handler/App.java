@@ -2,6 +2,7 @@ package com.atigeo.hacktm16.handler;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.mongodb.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -173,6 +174,8 @@ public class App {
 
     private ObjectNode processJsonNode(ObjectNode jsonNode) throws Exception{
 
+        ObjectMapper mapper = new ObjectMapper();
+
         //process speed
         JsonNode speedValue = jsonNode.get("speed");
         double speedDoubleMs = speedValue.asDouble();
@@ -181,10 +184,25 @@ public class App {
         jsonNode = jsonNode.put("speedkmh", speedDoubleKmh);
         jsonNode = jsonNode.put("speedms",speedDoubleMs);
 
-        //longitude
-
-
-        //latitude
+       //                                              longitude & latitude
+       //   "geo" : { "type" : "Point", "coordinates" : [ -121.88355687, 37.44609999 ] }
+        ArrayNode jNode = mapper.createArrayNode();
+        double longitude = jsonNode.get("longitude").asDouble();
+        double latitude = jsonNode.get("latitude").asDouble();
+        if(longitude > 1000 || longitude < -1000)
+            return null;
+        if(latitude > 1000 || latitude < -1000)
+            return null;
+        jNode = jNode.add(jsonNode.get("longitude").asDouble());
+        jNode = jNode.add(jsonNode.get("latitude").asDouble());
+        Map<String, JsonNode> geoMap = new HashMap<>();
+        geoMap.put("coordinates", jNode);
+        ObjectNode geo = mapper.createObjectNode();
+        geo = geo.put("type", "Point");
+        JsonNode geoJson = geo.setAll(geoMap);
+        Map<String, JsonNode> geoMapComplete = new HashMap<>();
+        geoMapComplete.put("geo", geoJson);
+        jsonNode = (ObjectNode) jsonNode.set("geo", geoJson);
 
         //unix time
         JsonNode driveTimeValue = jsonNode.get("drivetime");
