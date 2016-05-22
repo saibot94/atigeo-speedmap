@@ -138,9 +138,17 @@ body {
 
 .time-indicator {
 text-align: center;
-    margin-left: 45%;
+    margin-left: 40%;
     color:#1E90FF;
     font-size: 24px;
+}
+
+.speed-indicator {
+text-align: center;
+    margin-left: 40%;
+    color:#1E90FF;
+    font-size: 24px;
+
 }
 
 .chart-header {
