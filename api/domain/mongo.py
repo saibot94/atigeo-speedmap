@@ -113,7 +113,7 @@ def get_dangerous_streets(collection):
     #     location = geolocator.reverse(str(point['latitude']) + ", " + str(point['longitude']))
     #     addresses.append(location.address)
 
-    return {[
+    return [
         "Bulevardul 16 Decembrie 1989, Elisabetin",
         "C. Brancoveanu, Bulevardul 16 Decembrie 1989, Elisabetin",
         "Statie Taxi, Piata Alexandru Mocioni, Elisabetin",
@@ -124,7 +124,7 @@ def get_dangerous_streets(collection):
         "Ciprian Porumbescu, Strada Ciprian Porumbescu, Elisabetin",
         "Strada Ciprian Porumbescu, Elisabetin, Timisoara",
         "Strada Putna, Complexul Studentesc"
-    ]}
+    ]
 
 
 def get_illegalities_count(collection):
