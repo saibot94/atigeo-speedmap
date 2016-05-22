@@ -59,11 +59,14 @@ std::string PLUGIN_DESC = "A task which integrates the HackTM user app inside a 
 
 
 //path to where to dump the data
-std::string dump_filename = "C:\\drive_dump_tmp";
+std::string dumpDir = "D:\\hacktm-dump";
 std::ofstream outFile;
-
+std::string dump_filename = "";
 std::string lastTime = "";
 int callCounter = 0;
+const int MAX_ENTRIES = 5 * 60 ;
+int entryCounter = 0;
+std::string recordingId = "";
 
 //////////////////////////////////////////////////////////
 //           class CModPlugIn definition
@@ -117,9 +120,15 @@ long CModPlugIn::wxEVT_OPEN(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    CLogDevice::get()->addLogWriter(logWriter);
    LOG_INFO("AERO_HackTM #Ati build %s %s", __DATE__, __TIME__);
 
+   
+
+   return(0);
+};
+
+void setup_hacktm_dump_file()
+{
 	/* Set up the dump file*/
- 
-   LOG_INFO("trying to open file %s", dump_filename.c_str());
+   
    try{
 
 	   time_t rawtime;
@@ -128,7 +137,10 @@ long CModPlugIn::wxEVT_OPEN(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 	    char bufferTime [150];
 		strftime(bufferTime,80,"%Y%m%d%H%M%S", timeinfo);
 		std::string time(bufferTime); 
-		std::string fileName = "C:\\dev\\drive_dump_tmp_" + time + ".json";
+		std::string fileName = dumpDir +"\\drive_dump_tmp_" + time + ".json";
+		dump_filename = fileName;
+		LOG_INFO("trying to open file %s", dump_filename.c_str());
+
 		outFile.open(fileName.c_str());
 
 	   if (!outFile) 
@@ -144,21 +156,24 @@ long CModPlugIn::wxEVT_OPEN(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    {
 	   LOG_ERROR("exception while opening file" );
    }
-   return(0);
-};
+}
 
+void close_hacktm_dump_file()
+{
+	if (!outFile) 
+   { 
+	    LOG_ERROR("exception while closing file" );
+	}
+   else 
+   {
+	   outFile.close();
+   }
+}
 
 //! Event CLOSE will be called before host application will unload the dll
 long CModPlugIn::wxEVT_CLOSE(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 {
    TextPrint2Con("wxEVT_CLOSE was called"); arg_obj; ret_obj;
-
-   if (!outFile) 
-   { std::cerr<<"Error writing to ..."<<std::endl; } 
-   else 
-   {
-	   outFile.close();
-   }
 
    return(0);
 };
@@ -179,6 +194,16 @@ long CModPlugIn::wxEVT_CONNECT(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
   mSub_VEH_DYN_DATA->AddReceiveCallback(std::bind(&CModPlugIn::AEROTP_DataReceive_VEH_DYN,this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
   mSub_GPS_DATA->AddReceiveCallback(std::bind(&CModPlugIn::AEROTP_DataReceive_GPS,this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
 
+  setup_hacktm_dump_file();
+
+  time_t rawtime;
+	   time (&rawtime);
+	   struct tm * timeinfo = localtime(&rawtime);
+	    char bufferTime [150];
+		strftime(bufferTime,80,"%Y%m%d%H%M%S", timeinfo);
+		std::string time(bufferTime); 
+		recordingId = time;
+
    return(0);
 };
 
@@ -196,11 +221,6 @@ long CModPlugIn::wxEVT_DISCONNECT(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
   	
   return(0);
 };
-
-void dump_data_json(std::string jsonEntry)
-{
-
-}
 
 
 
@@ -258,17 +278,33 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
 		   LOG_INFO("VEH_DYN_Data not available");
    }
 
-   LOG_INFO("GPS_Data.f_Latitude: %f", RAD2DEG(GPS_Data.f_LatitudeRad));
-   char bufferLat [150];
-   sprintf (bufferLat, "%f", RAD2DEG(GPS_Data.f_LatitudeRad));
-   std::string latitude(bufferLat); 
-   dataJson += "\"latitude\":" + latitude + ",";
+   if(RAD2DEG(GPS_Data.f_LatitudeRad) < 1000 && RAD2DEG(GPS_Data.f_LatitudeRad) > -1000)
+   {
+	   LOG_INFO("GPS_Data.f_Latitude: %f", RAD2DEG(GPS_Data.f_LatitudeRad));
+	   char bufferLat [150];
+	   sprintf (bufferLat, "%10.6f", RAD2DEG(GPS_Data.f_LatitudeRad));
+	   std::string latitude(bufferLat); 
+	   dataJson += "\"latitude\":" + latitude + ",";
+   }
+   else
+   {
+	   std::string latitude("0");
+	   dataJson += "\"latitude\":" + latitude + ",";
+   }
 
-   LOG_INFO("GPS_Data.f_Longitude: %f", RAD2DEG(GPS_Data.f_LongitudeRad));
-   char bufferLong [150];
-   sprintf (bufferLong, "%f", RAD2DEG(GPS_Data.f_LongitudeRad));
-   std::string longitude(bufferLong); 
-   dataJson += "\"longitude\":" + longitude + ",";
+   if(RAD2DEG(GPS_Data.f_LongitudeRad) < 1000 && RAD2DEG(GPS_Data.f_LongitudeRad) > -1000)
+   {
+		LOG_INFO("GPS_Data.f_Longitude: %f", RAD2DEG(GPS_Data.f_LongitudeRad));
+		char bufferLong [150];
+		sprintf (bufferLong, "%10.6f", RAD2DEG(GPS_Data.f_LongitudeRad));
+		std::string longitude(bufferLong); 
+		dataJson += "\"longitude\":" + longitude + ",";
+   }
+   else 
+   {
+	   std::string longitude("0");
+	   dataJson += "\"longitude\":" + longitude + ",";
+   }
 
    if (LRR_FC_TrafParticList.u_NumTrafficParticipants > 0)
    {
@@ -332,6 +368,7 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    std::string timefinal(bufferTime); 
 
    dataJson += "\"drivetime\":" + timefinal + ",";
+   dataJson += "\"recordingid\":" + recordingId + ",";
 
    char bufferId [50];
    sprintf (bufferId, "%d", 1234567890);
@@ -345,8 +382,18 @@ long CModPlugIn::wxEVT_STEP(const wxPlg_Obj* arg_obj, wxPlg_Obj* ret_obj)
    if (!outFile) { std::cerr<<"Error writing to ..."<<std::endl; } 
    else 
    {
-	   LOG_INFO("writing to %s", dump_filename);
+	   LOG_INFO("writing entry %d to %s", entryCounter, dump_filename.c_str());
 	   outFile << dataJson;
+
+	   entryCounter++;
+   }
+
+   if ( entryCounter % MAX_ENTRIES == 0) 
+   {
+	   LOG_INFO("dump file reseted");
+	   close_hacktm_dump_file();
+	   setup_hacktm_dump_file();
+	   entryCounter = 0;
    }
 
    LOG_INFO("----------------------------------------------\n");
