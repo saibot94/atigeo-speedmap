@@ -37,7 +37,7 @@ public class App {
 
 //        String ip = args[0];
 //        String port = args[1];
-        if(args.length != 1){
+        if(args.length < 1){
             LOGGER.warn(String.format("missing input: dump directory"));
             return;
         }
@@ -215,6 +215,8 @@ public class App {
         String second = driveTime.substring(12, 14);
         String ms = driveTime.substring(14, 15);
 
+        jsonNode = jsonNode.put("ingestiontime", System.currentTimeMillis());
+
         int y = Integer.valueOf(year);
         int m = Integer.valueOf(month);
         int d = Integer.valueOf(day);
@@ -223,12 +225,20 @@ public class App {
         int ss = Integer.valueOf(second);
         int mss = Integer.valueOf(ms);
 
+        jsonNode = jsonNode.put("year", y);
+        jsonNode = jsonNode.put("month", m);
+        jsonNode = jsonNode.put("day", d);
+        jsonNode = jsonNode.put("hour", hh);
+        jsonNode = jsonNode.put("minute", mm);
+        jsonNode = jsonNode.put("second", ss);
+        jsonNode = jsonNode.put("millisecond", mss);
+
         Calendar calendar = new GregorianCalendar(y, m, d, hh, mm, ss);
         calendar.set(Calendar.MILLISECOND, mss);
         long utc = calendar.getTimeInMillis();
 
-
         jsonNode = jsonNode.put("unixtime", utc);
+        jsonNode = jsonNode.put("ingestiontime", System.currentTimeMillis());
 
         return jsonNode;
     }
