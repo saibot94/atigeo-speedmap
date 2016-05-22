@@ -27,9 +27,13 @@ public class App {
 //    private static String MONGO_COLLECTION = "drives";
 //    private static String MONGO_COLLECTION = "demo";
 //    private static String MONGO_COLLECTION = "mock";
+//    private static String MONGO_COLLECTION = "randtm";
+//        private static String MONGO_COLLECTION = "sunday";
+
     private static String MONGO_COLLECTION = "realtime";
 
-    private static long FILE_SLEEP = 1 * 1000;
+
+    private static long FILE_SLEEP = 2 * 1000;
     private static long BATCH_SLEEP = 1 * 1000;
     private static long DIR_SLEEP = 5 * 1000;
 
@@ -240,8 +244,17 @@ public class App {
                 return null;
             if (latitude > 1000 || latitude < -1000)
                 return null;
-            jNode = jNode.add(jsonNode.get("longitude").asDouble());
-            jNode = jNode.add(jsonNode.get("latitude").asDouble());
+
+            double longDouble = jsonNode.get("longitude").asDouble();
+            double latDouble = jsonNode.get("latitude").asDouble();
+
+            //random
+//            Random random = new Random();
+//            latDouble = random.doubles(44.759780, 47.759780).findFirst().getAsDouble();
+//            longDouble = random.doubles(20.230020, 22.230020).findFirst().getAsDouble();
+
+            jNode = jNode.add(longDouble);
+            jNode = jNode.add(latDouble);
             Map<String, JsonNode> geoMap = new HashMap<>();
             geoMap.put("coordinates", jNode);
             ObjectNode geo = mapper.createObjectNode();
@@ -317,5 +330,7 @@ public class App {
         MongoClient mongo = new MongoClient(MONGO_HOST, MONGO_PORT);
         return mongo;
     }
+
+
 
 }
