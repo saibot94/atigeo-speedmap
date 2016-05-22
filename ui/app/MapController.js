@@ -81,12 +81,18 @@
                                 unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
                         googlePoints.push(point);
                     }
-                    console.log('to concat: ', googlePoints);
+                    //console.log('to concat: ', googlePoints);
+
+
                     googlePoints = googlePoints.concat(vm.currentPoints);
                     vm.currentPoints = googlePoints;
                     var pointArray = new maps.MVCArray(googlePoints);
                     vm.heatLayer.setData(pointArray);
 
+                    var low = parseTimestamp(vm.sliderLow).split(":");
+                    var high = parseTimestamp(vm.sliderHigh).split(":");
+
+                    vm.changeHeatLayer(low, high)
                 });
             }
 

@@ -5,9 +5,10 @@
         angular.module('SrcApp')
             .controller('AnalyticsController', AnalyticsController);
 
-		AnalyticsController.$inject = ['$scope'];
-		function AnalyticsController ($scope) {
+		AnalyticsController.$inject = ['$scope', 'ApiAnalyticsService'];
+		function AnalyticsController ($scope, ApiAnalyticsService) {
 		    var vm = this;
+
 		}
 
 })();
