@@ -17,6 +17,7 @@ CORS(app)
 
 
 DISPLAY_SPEED = 16  # TODO: get from config
+COUNT = 1000
 
 
 @app.route('/points', methods=["GET"])
@@ -24,17 +25,28 @@ def get_drive_points():
     start_ts = request.args.get('start_ts')
     end_ts = request.args.get('end_ts')
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
-    realtime = request.args.get('realtime')
     box = request.args.get('box')
 
-    today_unixtime = None
-    if realtime and not start_ts:
+    points = get_points_with_weight(count=COUNT, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box)
+
+    response = make_response(jsonify({"points": points}))
+
+    return response
+
+@app.route('/realtime-points', methods=["GET"])
+def get_relatime_drive_points():
+    start_ts = request.args.get('start_ts')
+    from_speed = request.args.get('from_speed', DISPLAY_SPEED)
+    box = request.args.get('box')
+
+    if not start_ts:
         today_day = datetime.utcnow().date()
         today_unixtime = datetime(today_day.year, today_day.month, today_day.day, tzinfo=tz.tzutc()).strftime("%s")
+        start_ts = today_unixtime
 
-    start_ts = start_ts or today_unixtime
+    print start_ts
 
-    points = get_points_with_weight(count=10000, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box)
+    points = get_points_with_weight(count=COUNT, from_speed=from_speed, start_ts=start_ts, box=box, realtime=True)
 
     response = make_response(jsonify({"points": points}))
 

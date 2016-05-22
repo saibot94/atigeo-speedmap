@@ -2,14 +2,22 @@ from pymongo import MongoClient
 
 MONGO_HOST = "52.53.195.124"
 DB = "hacktm"
+COLLECTION_NAME = "demo"
 
 client = MongoClient(host=MONGO_HOST)
 db = client.get_database(DB)
 
+FIELDS = {
+    'latitude': 1,
+    'longitude': 1,
+    'unixtime': 1,
+    'speedkmh': 1,
+    'ingestiontime': 1,
+    '_id': 0
+}
 
 
-
-def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None):
+def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
     query_conditions = [{"speed": {"$gte": from_speed}}]
     if box:
         nlat = box['northeastern']['lat']
@@ -21,7 +29,10 @@ def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None
                                          {"longitude": {"$gte": wlong}},
                                          {"longitude": {"$lte": elong}}]})
 
-    if start_ts:
+    if realtime:
+        query_conditions.append({"ingestiontime": {"$gte": int(start_ts)}})
+
+    if start_ts and not realtime:
         query_conditions.append({"unixtime": {"$gte": start_ts}})
 
     if end_ts:
@@ -30,10 +41,10 @@ def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None
     if len(query_conditions) == 1:
         query = query_conditions[0]
     else:
-        query = {"and": query_conditions}
+        query = {"$and": query_conditions}
 
-    points_cursor = db.drives.find(query,
-                                   {'latitude': 1, 'longitude': 1, 'unixtime': 1, 'speedkmh': 1, '_id': 0})
+    print query
+    points_cursor = db.demo.find(query, FIELDS)
     return points_cursor if not count else points_cursor.limit(count)
 
 
@@ -56,7 +67,7 @@ def new_point(point):
     return new_point
 
 
-def get_points_with_weight(count=None, from_speed=None, start_ts=None, end_ts=None, box=None):
-    points = get_points(count=count, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box)
+def get_points_with_weight(count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
+    points = get_points(count=count, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box, realtime=realtime)
     points_with_weight = [new_point(point) for point in points]
     return points_with_weight
