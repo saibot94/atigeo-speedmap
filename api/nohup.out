@@ -1,0 +1,125 @@
+ * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+93.114.96.61 - - [21/May/2016 22:07:57] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:09:20] "GET /points HTTP/1.1" 200 -
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+93.114.96.61 - - [21/May/2016 22:10:55] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:11:04] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:11:18] "GET /points HTTP/1.1" 200 -
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+93.114.96.61 - - [21/May/2016 22:14:21] "GET /points HTTP/1.1" 200 -
+/usr/local/lib/python2.7/dist-packages/werkzeug/filesystem.py:63: BrokenFilesystemWarning: Detected a misconfigured UNIX filesystem: Will use UTF-8 as filesystem encoding instead of 'ANSI_X3.4-1968'
+  BrokenFilesystemWarning)
+Error on request:
+Traceback (most recent call last):
+  File "/usr/local/lib/python2.7/dist-packages/werkzeug/serving.py", line 193, in run_wsgi
+    execute(self.server.app)
+  File "/usr/local/lib/python2.7/dist-packages/werkzeug/serving.py", line 184, in execute
+    write(data)
+  File "/usr/local/lib/python2.7/dist-packages/werkzeug/serving.py", line 165, in write
+    self.wfile.write(data)
+IOError: [Errno 32] Broken pipe
+93.114.96.61 - - [21/May/2016 22:14:23] "GET /points HTTP/1.1" 200 -
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/domain/mongo.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+93.114.96.61 - - [21/May/2016 22:21:35] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:21:47] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:26:22] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:27:03] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:27:48] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:28:14] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:28:50] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:29:11] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:30:38] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:30:43] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:31:16] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:31:50] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:33:23] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:33:36] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:34:41] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [21/May/2016 22:34:49] "GET /points HTTP/1.1" 200 -
+185.25.151.159 - - [22/May/2016 02:30:10] "GET http://testp4.pospr.waw.pl/testproxy.php HTTP/1.1" 404 -
+183.60.204.242 - - [22/May/2016 05:28:29] "GET /script HTTP/1.1" 404 -
+93.114.96.61 - - [22/May/2016 06:30:53] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:31:00] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:31:04] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:31:29] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:33:07] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:35:38] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:36:09] "GET /points HTTP/1.1" 200 -
+93.114.96.61 - - [22/May/2016 06:36:30] "GET /points HTTP/1.1" 200 -
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+93.114.96.61 - - [22/May/2016 06:38:22] "GET /points HTTP/1.1" 200 -
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941
+ * Detected change in '/home/ubuntu/atigeo-speedmap/api/api.py', reloading
+ * Restarting with stat
+ * Debugger is active!
+ * Debugger pin code: 251-856-941

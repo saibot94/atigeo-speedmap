@@ -18,7 +18,7 @@
     <script src="js/jquery-2.1.4.js"></script>
     <script src="js/bootstrap.js"></script>
 
-    <script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBAGWk4cH9OQt1KScJPNMsn72ThtBCgdHo&libraries=visualization,weather,geometry"
+    <script defer async src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBAGWk4cH9OQt1KScJPNMsn72ThtBCgdHo&libraries=visualization,weather,geometry"
     ></script>
     <script src="js/lodash.min.js"></script>
     <script src="js/angular.js"></script>
@@ -58,13 +58,19 @@
                 <li ng-class="sidebar.getActive('/')">
                     <a href="#/"><span
                             class="glyphicon glyphicon-map-marker pull-left"></span>
-                        <div ng-if="!sidebar.bar.collapsed">Speedmap</div>
+                        <div ng-if="!sidebar.bar.collapsed">Search</div>
                     </a>
                 </li>
                 <li ng-class="sidebar.getActive('/analytics')">
                     <a href="#/analytics"><span
                             class="glyphicon glyphicon-signal pull-left"></span>
                         <div ng-if="!sidebar.bar.collapsed">Analytics</div>
+                    </a>
+                </li>
+                <li ng-class="sidebar.getActive('/dashboard')">
+                    <a href="#/dashboard"><span
+                            class="glyphicon glyphicon-signal pull-left"></span>
+                        <div ng-if="!sidebar.bar.collapsed">Speedmap</div>
                     </a>
                 </li>
             </ul>
@@ -93,9 +99,16 @@
 <script src="app/GraphController.js"></script>
 <script src="app/AnalyticsController.js"></script>
 <script src="app/SidebarController.js"></script>
+<script src="app/ApiCarDataService.js"></script>
+
+
 <script src="app/MapController.js"></script>
 <script src="app/PieChartController.js"></script>
 <script src="app/ApiAggregateService.js"></script>
+<script src="app/ApiSearchService.js"></script>
+<script src="app/SearchController.js"></script>
+<script src="app/LocationService.js"></script>
+
 <script src="js/angular-google-maps.min.js"></script>
 
 </body>
