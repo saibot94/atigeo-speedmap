@@ -24,13 +24,16 @@ public class App {
     private static final Logger LOGGER = LoggerFactory.getLogger(App.class);
 
     private static String MONGO_DATABASE = "hacktm";
-    private static String MONGO_COLLECTION = "drives";
+//    private static String MONGO_COLLECTION = "drives";
+    private static String MONGO_COLLECTION = "demo";
 
     private static String MONGO_HOST = "hack-mongo";
     private static int MONGO_PORT = 27017;
 
     private MongoClient mongoClient;
     private MongoDatabase mongoDatabase;
+
+    private static long recordingId = System.currentTimeMillis();
 
     public static void main(String[] args) throws InterruptedException {
         PropertyConfigurator.configure(App.class.getClassLoader().getResourceAsStream("log4j.xml"));
@@ -41,6 +44,12 @@ public class App {
             LOGGER.warn(String.format("missing input: dump directory"));
             return;
         }
+
+        boolean streaming = false;
+        if(args.length == 2){
+            streaming = true;
+        }
+
         String dumpDirectory = args[0];
 
         App app = new App();
@@ -56,7 +65,7 @@ public class App {
         LOGGER.info(String.format("Started with dir: %s", dumpDirectory));
         while(true) {
             LOGGER.info("crawling ... ");
-            app.crawlDirectory(dumpDirectory);
+            app.crawlDirectory(dumpDirectory, streaming);
             LOGGER.info("sleeping ... ");
             Thread.sleep(10 * 1000);
         }
@@ -78,7 +87,7 @@ public class App {
         }
     }
 
-    private void crawlDirectory(String dumpDirectoryPath){
+    private void crawlDirectory(String dumpDirectoryPath, boolean streaming){
 
         File dumpDirectory = new File(dumpDirectoryPath);
         if(!dumpDirectory.isDirectory()){
@@ -86,10 +95,17 @@ public class App {
             return;
         }
 
+        int lastDirectory = 0;
+        if(streaming){
+            lastDirectory = 1;
+        }
+
         File[] listOfFiles = dumpDirectory.listFiles();
         Arrays.sort(listOfFiles);
 
-        for(int i=0; i<listOfFiles.length - 1; i++){
+
+
+        for(int i=0; i<listOfFiles.length - lastDirectory; i++){
             File file = listOfFiles[i];
 
             if(file.isDirectory())
@@ -156,6 +172,8 @@ public class App {
             ObjectNode jsonNode = mapper.readValue(line, ObjectNode.class);
 
             jsonNode = processJsonNode(jsonNode);
+            if(jsonNode == null)
+                return null;
 //            LOGGER.info(String.format("processed : %s", jsonNode.toString()));
 
             Map<String, Object> result = mapper.convertValue(jsonNode, Map.class);
@@ -163,10 +181,10 @@ public class App {
             dbObject = new Document(result);
 
         } catch (IOException e) {
-            LOGGER.error("json exception");
+            LOGGER.error("json exception", e);
             LOGGER.info(String.format("line read: %s", line));
         } catch (Exception e) {
-            LOGGER.error("json exception");
+            LOGGER.error("json exception", e);
             LOGGER.info(String.format("line read: %s", line));
         }
         return dbObject;
@@ -178,67 +196,78 @@ public class App {
 
         //process speed
         JsonNode speedValue = jsonNode.get("speed");
-        double speedDoubleMs = speedValue.asDouble();
-        double speedDoubleKmh = 3.6 * speedDoubleMs;
+        if(speedValue != null) {
+            double speedDoubleMs = speedValue.asDouble();
+            double speedDoubleKmh = 3.6 * speedDoubleMs;
+            jsonNode = jsonNode.put("speedkmh", speedDoubleKmh);
+            jsonNode = jsonNode.put("speedms",speedDoubleMs);
 
-        jsonNode = jsonNode.put("speedkmh", speedDoubleKmh);
-        jsonNode = jsonNode.put("speedms",speedDoubleMs);
+        }
 
-       //                                              longitude & latitude
-       //   "geo" : { "type" : "Point", "coordinates" : [ -121.88355687, 37.44609999 ] }
-        ArrayNode jNode = mapper.createArrayNode();
-        double longitude = jsonNode.get("longitude").asDouble();
-        double latitude = jsonNode.get("latitude").asDouble();
-        if(longitude > 1000 || longitude < -1000)
-            return null;
-        if(latitude > 1000 || latitude < -1000)
-            return null;
-        jNode = jNode.add(jsonNode.get("longitude").asDouble());
-        jNode = jNode.add(jsonNode.get("latitude").asDouble());
-        Map<String, JsonNode> geoMap = new HashMap<>();
-        geoMap.put("coordinates", jNode);
-        ObjectNode geo = mapper.createObjectNode();
-        geo = geo.put("type", "Point");
-        JsonNode geoJson = geo.setAll(geoMap);
-        Map<String, JsonNode> geoMapComplete = new HashMap<>();
-        geoMapComplete.put("geo", geoJson);
-        jsonNode = (ObjectNode) jsonNode.set("geo", geoJson);
+        if(jsonNode.has("longitude")) {
+            //                                              longitude & latitude
+            //   "geo" : { "type" : "Point", "coordinates" : [ -121.88355687, 37.44609999 ] }
+            ArrayNode jNode = mapper.createArrayNode();
+            double longitude = jsonNode.get("longitude").asDouble();
+            double latitude = jsonNode.get("latitude").asDouble();
+            if (longitude > 1000 || longitude < -1000)
+                return null;
+            if (latitude > 1000 || latitude < -1000)
+                return null;
+            jNode = jNode.add(jsonNode.get("longitude").asDouble());
+            jNode = jNode.add(jsonNode.get("latitude").asDouble());
+            Map<String, JsonNode> geoMap = new HashMap<>();
+            geoMap.put("coordinates", jNode);
+            ObjectNode geo = mapper.createObjectNode();
+            geo = geo.put("type", "Point");
+            JsonNode geoJson = geo.setAll(geoMap);
+            Map<String, JsonNode> geoMapComplete = new HashMap<>();
+            geoMapComplete.put("geo", geoJson);
+            jsonNode = (ObjectNode) jsonNode.set("geo", geoJson);
+        }
 
-        //unix time
-        JsonNode driveTimeValue = jsonNode.get("drivetime");
-        String driveTime = driveTimeValue.asText();
-        String year = driveTime.substring(0, 4);
-        String month = driveTime.substring(4, 6);
-        String day = driveTime.substring(6, 8);
-        String hour = driveTime.substring(8, 10);
-        String minute = driveTime.substring(10, 12);
-        String second = driveTime.substring(12, 14);
-        String ms = driveTime.substring(14, 15);
+        if(jsonNode.has("drivetime")) {
+            //unix time
+            JsonNode driveTimeValue = jsonNode.get("drivetime");
+            String driveTime = driveTimeValue.asText();
+            String year = driveTime.substring(0, 4);
+            String month = driveTime.substring(4, 6);
+            String day = driveTime.substring(6, 8);
+            String hour = driveTime.substring(8, 10);
+            String minute = driveTime.substring(10, 12);
+            String second = driveTime.substring(12, 14);
+            String ms = driveTime.substring(14, 15);
+
+            jsonNode = jsonNode.put("ingestiontime", System.currentTimeMillis());
+
+            int y = Integer.valueOf(year);
+            int m = Integer.valueOf(month);
+            int d = Integer.valueOf(day);
+            int hh = Integer.valueOf(hour);
+            int mm = Integer.valueOf(minute);
+            int ss = Integer.valueOf(second);
+            int mss = Integer.valueOf(ms);
+
+            jsonNode = jsonNode.put("year", y);
+            jsonNode = jsonNode.put("month", m);
+            jsonNode = jsonNode.put("day", d);
+            jsonNode = jsonNode.put("hour", hh);
+            jsonNode = jsonNode.put("minute", mm);
+            jsonNode = jsonNode.put("second", ss);
+            jsonNode = jsonNode.put("millisecond", mss);
+
+            Calendar calendar = new GregorianCalendar(y, m, d, hh, mm, ss);
+            calendar.set(Calendar.MILLISECOND, mss);
+            long utc = calendar.getTimeInMillis();
+
+            jsonNode = jsonNode.put("unixtime", utc);
+        }
 
         jsonNode = jsonNode.put("ingestiontime", System.currentTimeMillis());
 
-        int y = Integer.valueOf(year);
-        int m = Integer.valueOf(month);
-        int d = Integer.valueOf(day);
-        int hh = Integer.valueOf(hour);
-        int mm = Integer.valueOf(minute);
-        int ss = Integer.valueOf(second);
-        int mss = Integer.valueOf(ms);
-
-        jsonNode = jsonNode.put("year", y);
-        jsonNode = jsonNode.put("month", m);
-        jsonNode = jsonNode.put("day", d);
-        jsonNode = jsonNode.put("hour", hh);
-        jsonNode = jsonNode.put("minute", mm);
-        jsonNode = jsonNode.put("second", ss);
-        jsonNode = jsonNode.put("millisecond", mss);
-
-        Calendar calendar = new GregorianCalendar(y, m, d, hh, mm, ss);
-        calendar.set(Calendar.MILLISECOND, mss);
-        long utc = calendar.getTimeInMillis();
-
-        jsonNode = jsonNode.put("unixtime", utc);
-        jsonNode = jsonNode.put("ingestiontime", System.currentTimeMillis());
+        if(!jsonNode.has("recordingid")){
+            jsonNode = jsonNode.put("recordingid", recordingId);
+        }
 
         return jsonNode;
     }
