@@ -4,9 +4,9 @@
 		angular.module('SrcApp')
 			.controller('GraphController', GraphController);
 
-		GraphController.$inject = ['$scope'];
+		GraphController.$inject = ['$scope', 'ApiCarDataService'];
 
-		function GraphController($scope) {
+		function GraphController($scope, ApiCarDataService) {
 			var vm = this;
 
 			vm.lineGraphOptions = {
@@ -26,7 +26,7 @@
                     	axisLabel: 'Time (ms)'
 	                },
 	                yAxis: {
-	                    axisLabel: 'Voltage (v)',
+	                    axisLabel: 'Speed (kmh)',
 	                    tickFormat: function(d){
 	                        return d3.format('.02f')(d);
 	                    },
@@ -38,11 +38,11 @@
 				},
 	            title: {
                 	enable: true,
-                	text: 'Some analytics shit here'
+                	text: 'Live velocity data'
             	},
             	subtitle: {
                 	enable: true,
-                	text: 'Subtitle for simple line chart. Lorem ipsum dolor sit amet, at eam blandit sadipscing, vim adhuc sanctus disputando ex, cu usu affert alienum urbanitas.',
+                	text: 'Agg. data throughout the city',
                 	css: {
 	                    'text-align': 'center',
      	               'margin': '10px 13px 0px 7px'
@@ -51,36 +51,44 @@
 
 			};
 		
-			vm.lineGraphData = sinAndCos();
+            ApiCarDataService.GetPoints().then(function(res) {
+                console.log(res.data.points);
+                vm.lineGraphData = createDataPoints(res.data.points);
+                var x = 100;
+                setInterval(function(){
+                    vm.lineGraphData[0].values.push({ x: x,	y: res.data.points[x].speedkmh});
+                  if (vm.lineGraphData[0].values.length > 100) vm.lineGraphData[0].values.shift();
+                    x++;
+
+                  $scope.$apply(); // update both chart
+                }, 500);
+            });
+
 
 	        /*Random Data Generator */
-	        function sinAndCos() {
+	        function createDataPoints(points) {
 	            var sin = [],sin2 = [],
 	                cos = [];
+                var carData = [];
+
 
 	            //Data is represented as an array of {x,y} pairs.
 	            for (var i = 0; i < 100; i++) {
-	                sin.push({x: i, y: Math.sin(i/10)});
-	                sin2.push({x: i, y: i % 10 == 5 ? null : Math.sin(i/10) *0.25 + 0.5});
-	                cos.push({x: i, y: .5 * Math.cos(i/10+ 2) + Math.random() / 10});
+	                carData.push({x: i , y: points[i].speedkmh});
+//
+//	                sin.push({x: i, y: Math.sin(i/10)});
+//	                sin2.push({x: i, y: i % 10 == 5 ? null : Math.sin(i/10) *0.25 + 0.5});
+//	                cos.push({x: i, y: .5 * Math.cos(i/10+ 2) + Math.random() / 10});
 	            }
+
+
 
 	            //Line chart data should be sent as an array of series objects.
 	            return [
 	                {
-	                    values: sin,      //values - represents the array of {x,y} data points
-	                    key: 'Sine Wave', //key  - the name of the series.
-	                    color: '#ff7f0e'  //color - optional: choose your own line color.
-	                },
-	                {
-	                    values: cos,
-	                    key: 'Cosine Wave',
-	                    color: '#2ca02c'
-	                },
-	                {
-	                    values: sin2,
-	                    key: 'Another sine wave',
-	                    color: '#7777ff',
+	                    values: carData,
+	                    key: 'Car velocity',
+	                    color: 'orange',
 	                    area: true      //area - set to true if you want this line to turn into a filled area chart.
 	                }
 	            ];
