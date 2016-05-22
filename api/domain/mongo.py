@@ -104,14 +104,14 @@ def get_speed_stats(collection):
 
 
 def get_dangerous_streets(collection):
-    collection = db.get_collection(collection)
-    fields = {"latitude": 1, "longitude": 1, "_id": 0}
-    dangerous = list(collection.find({"speedkmh": {"$gte": 65.0}}, fields).limit(120))
-    unique_points = list(np.unique(np.array(dangerous)))
-    addresses = []
-    for point in unique_points:
-        location = geolocator.reverse(str(point['latitude']) + ", " + str(point['longitude']))
-        addresses.append(location.address)
+    # collection = db.get_collection(collection)
+    # fields = {"latitude": 1, "longitude": 1, "_id": 0}
+    # dangerous = list(collection.find({"speedkmh": {"$gte": 65.0}}, fields).limit(120))
+    # unique_points = list(np.unique(np.array(dangerous)))
+    # addresses = []
+    # for point in unique_points:
+    #     location = geolocator.reverse(str(point['latitude']) + ", " + str(point['longitude']))
+    #     addresses.append(location.address)
 
     return {
         "dangerous": [
