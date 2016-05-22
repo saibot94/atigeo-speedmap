@@ -25,14 +25,15 @@ public class App {
 
     private static String MONGO_DATABASE = "hacktm";
 //    private static String MONGO_COLLECTION = "drives";
-//    private static String MONGO_COLLECTION = "demo";
+
 //    private static String MONGO_COLLECTION = "mock";
 //    private static String MONGO_COLLECTION = "randtm1";
 
 //        private static String MONGO_COLLECTION = "sunday";
-    private static String MONGO_COLLECTION = "sunday2";
+//    private static String MONGO_COLLECTION = "sunday2";
 
-//    private static String MONGO_COLLECTION = "realtime1";
+//    private static String MONGO_COLLECTION = "demo";
+    private static String MONGO_COLLECTION = "realtime";
 
 
     private static long FILE_SLEEP = 2 * 1000;
