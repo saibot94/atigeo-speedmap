@@ -29,7 +29,8 @@
           }).
           when('/analytics', {
             templateUrl: 'templates/analytics.html',
-            controller: 'AnalyticsController'
+            controller: 'AnalyticsController',
+            controllerAs: 'Analytics'
           }).
           when('/', {
             templateUrl: 'templates/search.html',

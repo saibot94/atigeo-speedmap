@@ -19,14 +19,14 @@
                 </div>
 
             </div>
-            <div class="col-md-5 col-md-push-1" ng-controller="PieChartController as vm">
+            <div class="col-md-5 col-md-push-1" ng-controller="BarChartController as barchart">
                 <div class="chart-wrapper">
 
                     <div class="chart-header">
-                        <h5>Pie chart 1</h5>
+                        <h5>Bar chart</h5>
                     </div>
                     <div class="chart-content">
-                        <nvd3 options="vm.options" data="vm.data"></nvd3>
+                        <nvd3 options="barchart.chartOptions" data="barchart.chartData"></nvd3>
                     </div>
                 </div>
             </div>
