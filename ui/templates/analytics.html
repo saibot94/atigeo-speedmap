@@ -7,7 +7,7 @@
                     Analytics
                 </h2>
             </div>
-            <div class="col-md-5 col-md-push-1" ng-controller="GraphController as vm">
+            <div class="col-md-4 col-md-push-1" ng-controller="GraphController as vm">
                 <div class="chart-wrapper">
 
                     <div class="chart-header">
@@ -19,11 +19,11 @@
                 </div>
 
             </div>
-            <div class="col-md-5 col-md-push-1" ng-controller="BarChartController as barchart">
+            <div class="col-md-6 col-md-push-1" ng-controller="BarChartController as barchart">
                 <div class="chart-wrapper">
 
                     <div class="chart-header">
-                        <h5>Bar chart</h5>
+                        <h5>Average speeds</h5>
                     </div>
                     <div class="chart-content">
                         <nvd3 options="barchart.chartOptions" data="barchart.chartData"></nvd3>

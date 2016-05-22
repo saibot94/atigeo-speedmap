@@ -7,6 +7,7 @@
 
 	function LocationService(){
 	    var location = 'Timisoara';
+	    var defaultDb = null;
 	    var bounds = null;
 	    var realtime = false;
 
@@ -16,7 +17,9 @@
 	        SetBounds: setBounds,
 	        GetBounds: getBounds,
 	        GetRealtime: getRealtime,
-	        SetRealtime: setRealtime
+	        SetRealtime: setRealtime,
+	        SetDefaultDb: setDefaultDb,
+	        GetDefaultDb: getDefaultDb
 	    };
 
 	    return service;
@@ -25,6 +28,15 @@
             realtime = val;
         }
 
+        function setDefaultDb(val){
+            if(val)
+                defaultDb = val;
+        }
+
+
+        function getDefaultDb(){
+            return defaultDb;
+        }
 	    function setLocation(loc){
             location = loc;
 

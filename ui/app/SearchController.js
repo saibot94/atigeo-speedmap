@@ -22,7 +22,9 @@
                         if(res.data.status == 'OK') {
                             LocationService.SetLocation(res.data.results[0].formatted_address);
                             LocationService.SetRealtime(vm.realtime);
+                            LocationService.SetDefaultDb(vm.defaultDb);
                             console.log('set realtime to: ' + vm.realtime);
+                            console.log('set default db to: ' + vm.defaultDb);
                             $location.path('/dashboard');
                         }
                     });
