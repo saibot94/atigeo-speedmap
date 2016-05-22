@@ -16,11 +16,6 @@ app = Flask(__name__)
 CORS(app)
 
 
-app_conf = ConfigParser.ConfigParser()
-app_conf.read("atism.ini")
-
-
-LEGAL_SPEED_LIMIT = app_conf.get("Legal", "speed")
 DISPLAY_SPEED = 16  # TODO: get from config
 
 
@@ -30,24 +25,23 @@ def get_drive_points():
     end_ts = request.args.get('end_ts')
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
 
-    points = get_points_with_weight(
-        count=10000, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts
-    )
+    points = get_points_with_weight(count=10000, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts)
 
     response = make_response(jsonify({"points": points}))
 
     return response
 
-@app.route('/real-points', methods=["GET"])
+
+@app.route('/realtime-points', methods=["GET"])
 def get_realtime_drive_points():
     from_ts = request.args.get('from_ts')
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
-    points = get_points_with_weight(count=10000, from_speed=from_speed)
 
     today_day = datetime.utcnow().date()
-    today = datetime(today_day.year, today_day.month, today_day.day, tzinfo=tz.tzutc())
+    today_unixtime = datetime(today_day.year, today_day.month, today_day.day, tzinfo=tz.tzutc()).strftime("%s")
+    start_ts = from_ts or today_unixtime
 
-    start_time = from_ts or today_day
+    points = get_points_with_weight(count=10000, from_speed=from_speed, start_ts=start_ts)
 
     response = make_response(jsonify({"points": points}))
 

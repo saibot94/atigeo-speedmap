@@ -19,7 +19,7 @@ def new_point(point):
     speed = point['speedkmh']
     if 40 < speed < 50:
         display = speed / 1.2456
-    elif  50 < speed < 60:
+    elif 50 < speed < 60:
         display = speed 
     else: 
        display = speed * 1.22
