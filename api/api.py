@@ -1,4 +1,7 @@
+import time
 import ConfigParser
+from dateutil import tz
+from datetime import datetime
 
 from flask import Flask
 from flask import jsonify
@@ -27,7 +30,9 @@ def get_drive_points():
     end_ts = request.args.get('end_ts')
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
 
-    points = get_points_with_weight(count=10000, from_speed=from_speed)
+    points = get_points_with_weight(
+        count=10000, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts
+    )
 
     response = make_response(jsonify({"points": points}))
 
@@ -37,8 +42,12 @@ def get_drive_points():
 def get_realtime_drive_points():
     from_ts = request.args.get('from_ts')
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
-
     points = get_points_with_weight(count=10000, from_speed=from_speed)
+
+    today_day = datetime.utcnow().date()
+    today = datetime(today_day.year, today_day.month, today_day.day, tzinfo=tz.tzutc())
+
+    start_time = from_ts or today_day
 
     response = make_response(jsonify({"points": points}))
 
