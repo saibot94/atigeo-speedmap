@@ -1,37 +1,162 @@
-(function(){
-		'use strict';
+    (function(){
+            'use strict';
 
-		angular.module('SrcApp')
-			.controller('MapController', MapController);
+            angular.module('SrcApp')
+                .controller('MapController', MapController);
 
-		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi'];
-		function MapController ($scope, uiGmapGoogleMapApi) {
+
+		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi', 'ApiCarDataService','LocationService', '$filter'];
+		function MapController ($scope, uiGmapGoogleMapApi, ApiCarDataService, LocationService, $filter) {
 			var vm = this;
+			vm.coordinates = computeCoordinates(LocationService.GetBounds());
          	vm.heatLayer = null;
+            vm.sliderHigh = 86340;
+            vm.sliderLow = 0;
 
-			vm.map = {
-	            center: {
-	            latitude: 37.782551,
-	            longitude: -122.445368
-	            },
-	            zoom: 12,
-	            heatLayerCallback: function (layer) {
-	                //set the heat layers backend data
-	                vm.heatLayer  = new getMockHeatLayer(layer);
-	                },
-	            showHeat: true
-	        };		
+            vm.map = {
+                center: {
+                latitude: vm.coordinates.lat,
+                longitude: vm.coordinates.lng
+                },
+                zoom: 14,
+                heatLayerCallback: function (layer) {
+                    //set the heat layers backend data
+                    //new google.maps.MVCArray(googlePoints);
+                    vm.heatLayer  = getMockHeatLayer(layer, 1);
+                    },
+                showHeat: true
+            };
 
-	        vm.setHeatLayerItemWeight = function(){
-	        	
+
+            ApiCarDataService.GetPoints().then(function(res){
+                var points = res.data.points;
+                createHeatLayer(vm.heatLayer, points);
+            });
+
+            vm.sliderOptions  = {
+              step: 60,
+              floor: 0,
+              ceil: 86340,
+              translate: function(value, sliderId, label) {
+                  switch (label) {
+                     case 'model':
+                      return parseTimestamp(value);
+                    case 'high':
+                      return parseTimestamp(value);
+                    default:
+                      return parseTimestamp(value);
+                  }
+                },
+               onChange: function(change) {
+                    var low = parseTimestamp(vm.sliderLow).split(":");
+                    var high = parseTimestamp(vm.sliderHigh).split(":");
+
+                    vm.changeHeatLayer(low, high)
+               }
+            };
+
+            vm.parseTimestamp = parseTimestamp;
+
+
+            vm.greaterThanTimestamp = function(prop, val){
+                    return function(item){
+
+                      var timestamp = item[prop];
+                      var d =  new Date(timestamp);
+                      if(d.getHours() >= Number(val[0])){
+                        return true;
+                      }
+                      else if(d.getMinutes() >= Number(val[1]))
+                      {
+                        return true;
+                      }
+                      return false;
+
+                       //if Number(timestamp[0]) > val[0]
+
+                    }
+                }
+
+	        vm.changeHeatLayer = function(newlow, newhigh){
+                var filteredByLow = $filter('filter')(vm.currentPoints, vm.greaterThanTimestamp('unixtime', newlow));
+                console.log(filteredByLow);
+                createHeatLayer(vm.heatLayer, filteredByLow, true);
+                //vm.heatLayer = getMockHeatLayer(vm.heatLayer, high);
+
 	        }
 
+	        function computeCoordinates (bounds){
+	            return {lat: (bounds.northeast.lat + bounds.southwest.lat) / 2,
+	                    lng: (bounds.northeast.lng + bounds.southwest.lng) / 2};
+	        }
+
+
+
+           function createHeatLayer(heatLayer, points, isGooglePointsArray){
+
+
+                  uiGmapGoogleMapApi.then(function(maps) {
+                        if(!isGooglePointsArray){
+                        var googlePoints = [];
+                        console.log('points len: ' + points.length);
+                        for(var i = 0; i < points.length; i++) {
+                            var point = new maps.LatLng(points[i].latitude, points[i].longitude);
+                            googlePoints.push({location: point, weight: points[i].weight, unixtime: points[i].unixtime });
+                        }
+                        var pointArray = new maps.MVCArray(googlePoints);
+                        }
+                        else {
+                        var pointArray = new maps.MVCArray(points);
+                        }
+
+                        heatLayer.setData(pointArray);
+                        vm.heatLayer = heatLayer;
+                        if(!isGooglePointsArray){
+                            vm.currentPoints = googlePoints;
+                        }
+                    });
+
+            }
+
+
+
+
+
+
+
+
+
+
 	    }
+
+
+	    function parseTimestamp(value) {
+	          var date = getCurrentDate();
+              var exactTime = new Date((date+value) * 1000);
+              var hours = exactTime.getHours();
+              var minutes = exactTime.getMinutes();
+              return (hours < 10 ? "0" + hours : hours) + ":" +  (minutes < 10 ? "0" + minutes : minutes);
+
+	    }
+
+
+
+        function getCurrentDate(){
+            var d = new Date();
+            d.setHours(d.getHours() - d.getHours());
+            d.setMinutes(d.getMinutes() - d.getMinutes());
+            d.setSeconds(d.getSeconds() - d.getSeconds());
+
+            return d/1000;
+        }
+
+
+
 
 		function getMockHeatLayer(heatLayer, initialWeight) {
 		    // Adding 500 Data Points
 		       var taxiData = [
-	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 1.5},
+	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: initialWeight},
 	        new google.maps.LatLng(37.782745, -122.444586),
 	        new google.maps.LatLng(37.782842, -122.443688),
 	        new google.maps.LatLng(37.782919, -122.442815),

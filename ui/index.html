@@ -1,97 +1,116 @@
-	<!DOCTYPE html>
-	<html>
+<!DOCTYPE html>
+<html>
 
-	<head>
-		<meta charset="UTF-8">
-		<title>Speedmap - Atigeo</title>
+<head>
+    <meta charset="UTF-8">
+    <title>Speedmap - Atigeo</title>
 
-		<link rel="stylesheet" href="css/bootstrap.css">
-		<link rel="stylesheet" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" href="css/bootstrap.css">
+    <link rel="stylesheet" href="css/bootstrap-theme.css">
+    <link rel="stylesheet" href="css/font-awesome.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.css">
 
-	    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-	    <script src="js/nv.d3.js"></script>
-		<script src="js/jquery-2.1.4.js"></script>
-		<script src="js/bootstrap.js"></script>
+    <link rel="stylesheet" href="css/awesome-bootstrap-checkbox.css">
+    <link rel="stylesheet" href="css/rzslider.min.css">
 
-		<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBAGWk4cH9OQt1KScJPNMsn72ThtBCgdHo&libraries=visualization,weather,geometry"
-			></script>
-        <script src="js/lodash.min.js">	</script>
-		<script src="js/angular.js"></script>
-		<script src="js/angular-nvd3.min.js"></script>
-		<script src="js/angular-simple-logger.js"></script>
-		<script src="js/ui-bootstrap.min.js"></script>
+    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+    <script src="js/nv.d3.js"></script>
+    <script src="js/jquery-2.1.4.js"></script>
+    <script src="js/bootstrap.js"></script>
+
+    <script defer async src="http://maps.googleapis.com/maps/api/js?key=AIzaSyBAGWk4cH9OQt1KScJPNMsn72ThtBCgdHo&libraries=visualization,weather,geometry"
+    ></script>
+    <script src="js/lodash.min.js"></script>
+    <script src="js/angular.js"></script>
+    <script src="js/angular-nvd3.min.js"></script>
+    <script src="js/angular-simple-logger.js"></script>
+    <script src="js/ui-bootstrap.min.js"></script>
+    <script src="js/angular-aria.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-route.min.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular-animate.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-material/1.0.9/angular-material.min.js"></script>
+    <script src="js/rzslider.min.js"></script>
+
+    <link rel="stylesheet" href="css/nv.d3.min.css">
+    <link rel="stylesheet" href="css/sidebar.css">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        }
+        .angular-google-map-container { height: 600px; }
+
+    </style>
+</head>
+<body>
+<div ng-app="SrcApp">
+    <nav class="navbar navbar-default navbar-fixed-side" ng-class="{'is-navbar-collapsed': sidebar.bar.collapsed }"
+         ng-controller="SidebarController as sidebar">
+        <!-- normal collapsible navbar markup -->
+        <div class="container-fluid">
+            <ul class="nav navbar-nav sidebar-nav">
+
+                <img src="img/xPatternsLogo.jpg" class="pull-right our-logo" ng-if="!sidebar.bar.collapsed">
+                <img src="img/xPatternsLogo.jpg" class="pull-right our-logo-smallish" ng-if="sidebar.bar.collapsed">
+
+                <li ng-class="sidebar.getActive('/')">
+                    <a href="#/"><span
+                            class="glyphicon glyphicon-map-marker pull-left"></span>
+                        <div ng-if="!sidebar.bar.collapsed">Search</div>
+                    </a>
+                </li>
+                <li ng-class="sidebar.getActive('/analytics')">
+                    <a href="#/analytics"><span
+                            class="glyphicon glyphicon-signal pull-left"></span>
+                        <div ng-if="!sidebar.bar.collapsed">Analytics</div>
+                    </a>
+                </li>
+                <li ng-class="sidebar.getActive('/dashboard')">
+                    <a href="#/dashboard"><span
+                            class="glyphicon glyphicon-signal pull-left"></span>
+                        <div ng-if="!sidebar.bar.collapsed">Speedmap</div>
+                    </a>
+                </li>
+            </ul>
+            <div ng-if="sidebar.bar.collapsed">
+                <div class="expand-sidebar">
+                    <i class="fa fa-bars" aria-hidden="true"
+                    ng-click="sidebar.bar.collapsed = !sidebar.bar.collapsed"></i>
+                </div>
+            </div>
+            <div ng-if="!sidebar.bar.collapsed">
+                <div class="collapse-sidebar">
+                      <i class="fa fa-bars" aria-hidden="true"
+                    ng-click="sidebar.bar.collapsed = !sidebar.bar.collapsed" class="pull-right"></i>
+                </div>
+            </div>
+
+        </div>
+    </nav>
+    <div class="container main-content">
+        <ng-view></ng-view>
+    </div>
+</div>
+<br>
+
+<script src="app/app.js"></script>
+<script src="app/GraphController.js"></script>
+<script src="app/AnalyticsController.js"></script>
+<script src="app/SidebarController.js"></script>
+<script src="app/ApiCarDataService.js"></script>
 
 
-		<link rel="stylesheet" href="css/nv.d3.min.css">
-		<style>
-	      html, body {
-	        height: 100%;
-	        margin: 0;
-	        padding: 0;
-	      }
-	      .angular-google-map-container { height: 400px; }
+<script src="app/MapController.js"></script>
+<script src="app/PieChartController.js"></script>
+<script src="app/ApiAggregateService.js"></script>
+<script src="app/ApiSearchService.js"></script>
+<script src="app/SearchController.js"></script>
+<script src="app/LocationService.js"></script>
 
-		</style>
-	</head>
+<script src="js/angular-google-maps.min.js"></script>
 
-	<body ng-app="SrcApp">
-		<div class="container" ng-controller="MainController as vm">
-			<div class="row">
-				<div class="col-md-10 col-md-push-1">
+</body>
 
-					<h2 class="ng-cloak" style="color: #1E90FF">
-					Speedmap		
-					</h2>
-				<img src="img/xPatternsLogo.jpg" style="width:150px;height:100px" class="pull-right">
-				<br>
-				<form style="clear:both;">
-					<div class="form-group">
-						<label>Date from: </label>
-						<input class="form-control" type="text" ng-model="vm.formModel.dateFrom">
-					</div>
-					<div class="form-group">
-						<label>Date to: </label>
-						<input class="form-control" type="text" ng-model="vm.formModel.dateTo">	
-					</div>
-					<button class="btn btn-primary" type="submit" ng-click="vm.getAggregates()">Get aggregates</button>
-				</form>
-				<br>
-					<div class="well well-sm">
-						Note: the date format must be: "yyyy-mm-dd". <br>If either field is empty, it just gets the aggregates for all periods <br>If dates are inserted, then the aggregates will be recomputed (which might take a while)
-					</div>
-				</div>
-			</div>
-			<div class="row" ng-controller="MapController as mapController">
-				<div class="col-md-10 col-md-push-1">
-					
-					<br>
-					<ui-gmap-google-map center='mapController.map.center' zoom='mapController.map.zoom'>
-						    <ui-gmap-layer namespace="visualization" type="HeatmapLayer" show="mapController.map.showHeat"
-						     onCreated="mapController.map.heatLayerCallback"></ui-gmap-layer>
-					</ui-gmap-google-map>
-				</div>
-			</div>
-		</div>
-
-		<div class="container" ng-controller="GraphController as vm">
-			<div class="row">
-				<div class="col-md-10 col-md-push-1">
-					<nvd3 options="vm.lineGraphOptions" data="vm.lineGraphData"> </nvd3>
-				</div>
-			</div>
-			
-		</div>
-		</div>
-		<br>
-
-		<script src="app/app.js"></script>
-		<script src="app/GraphController.js"></script>
-		<script src="app/ApiAggregateService.js"></script>
-		<script src="app/MapController.js"></script>
-
-		
-		<script src="js/angular-google-maps.min.js"></script>
-
-	</body>
-
-	</html>
+</html>
