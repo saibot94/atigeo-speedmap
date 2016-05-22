@@ -27,11 +27,12 @@ def get_drive_points():
     from_speed = request.args.get('from_speed', DISPLAY_SPEED)
     box = request.args.get('box')
 
-    points = get_points_with_weight(count=COUNT, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box)
+    points = get_points_with_weight(collection="demo", count=COUNT, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box)
 
     response = make_response(jsonify({"points": points}))
 
     return response
+
 
 @app.route('/realtime-points', methods=["GET"])
 def get_relatime_drive_points():
@@ -46,7 +47,7 @@ def get_relatime_drive_points():
 
     print start_ts
 
-    points = get_points_with_weight(count=COUNT, from_speed=from_speed, start_ts=start_ts, box=box, realtime=True)
+    points = get_points_with_weight(collection="realtime", count=COUNT, from_speed=from_speed, start_ts=start_ts, box=box, realtime=True)
 
     response = make_response(jsonify({"points": points}))
 

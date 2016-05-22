@@ -17,7 +17,8 @@ FIELDS = {
 }
 
 
-def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
+def get_points(collection, count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
+
     query_conditions = [{"speed": {"$gte": from_speed}}]
     if box:
         nlat = box['northeastern']['lat']
@@ -43,8 +44,9 @@ def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None
     else:
         query = {"$and": query_conditions}
 
-    print query
-    points_cursor = db.demo.find(query, FIELDS)
+    collection = db.get_collection(collection)
+    points_cursor = collection.find(query, FIELDS)
+
     return points_cursor if not count else points_cursor.limit(count)
 
 
@@ -67,7 +69,7 @@ def new_point(point):
     return new_point
 
 
-def get_points_with_weight(count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
-    points = get_points(count=count, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box, realtime=realtime)
+def get_points_with_weight(collection, count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
+    points = get_points(collection, count=count, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box, realtime=realtime)
     points_with_weight = [new_point(point) for point in points]
     return points_with_weight
