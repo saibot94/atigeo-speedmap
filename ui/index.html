@@ -68,8 +68,8 @@
                     </a>
                 </li>
                 <li ng-class="sidebar.getActive('/dashboard')">
-                    <a href="#/dashboard"><span
-                            class="glyphicon glyphicon-signal pull-left"></span>
+                    <a href="#/dashboard">
+                        <span class="glyphicon glyphicon-move pull-left"></span>
                         <div ng-if="!sidebar.bar.collapsed">Speedmap</div>
                     </a>
                 </li>
@@ -85,6 +85,14 @@
                       <i class="fa fa-bars" aria-hidden="true"
                     ng-click="sidebar.bar.collapsed = !sidebar.bar.collapsed" class="pull-right"></i>
                 </div>
+            </div>
+
+            <div style="bottom: 55px;position:fixed" ng-if="!sidebar.bar.collapsed">
+                <span style="color: black">Partners:
+                <br>
+                    <img src="img/continental-logo-2.jpg" class="pull-left conti-logo-smallish" >
+                </span>
+
             </div>
 
         </div>

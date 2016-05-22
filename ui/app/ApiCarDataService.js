@@ -11,7 +11,9 @@
             var baseUrl = 'http://52.53.195.124:8080';
 
             var service = {
-                GetPoints: getPoints
+                GetPoints: getPoints,
+                InitRealtimePoints: initRealtimePoints,
+                PollRealtime: pollRealtime
             };
 
 
@@ -21,6 +23,22 @@
                 return $http({
                   method: 'GET',
                   url: baseUrl + '/points',
+                });
+            }
+
+            function initRealtimePoints(){
+                return $http({
+                    method: 'GET',
+                    url: baseUrl + '/realtime-points'
+                });
+            }
+
+
+            function pollRealtime(){
+                return $http({
+                    method: 'GET',
+                    params: {'start_ts' : Date.now()},
+                    url: baseUrl + '/realtime-points'
                 });
             }
 
