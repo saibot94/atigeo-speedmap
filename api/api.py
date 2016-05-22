@@ -34,10 +34,11 @@ def get_drive_points():
     return response
 
 @app.route('/real-points', methods=["GET"])
-def get_drive_points():
+def get_realtime_drive_points():
     from_ts = request.args.get('from_ts')
+    from_speed = request.args.get('from_speed', DISPLAY_SPEED)
 
-    points = get_points_with_weight(count=10000, from_speed=DISPLAY_SPEED)
+    points = get_points_with_weight(count=10000, from_speed=from_speed)
 
     response = make_response(jsonify({"points": points}))
 
