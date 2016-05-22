@@ -115,16 +115,16 @@ def get_dangerous_streets(collection):
 
     return {
         "dangerous": [
-            "22, Bulevardul 16 Decembrie 1989, Elisabetin, Timișoara, Timiș, 300172, România",
-            "C. Brâncoveanu, Bulevardul 16 Decembrie 1989, Elisabetin, Timișoara, Timiș, 300172, România",
-            "Stație Taxi, Piața Alexandru Mocioni, Elisabetin, Timișoara, Timiș, 300173, România",
-            "Bulevardul 16 Decembrie 1989, Elisabetin, Timișoara, Timiș, 300172, România",
-            "20, Bulevardul 16 Decembrie 1989, Elisabetin, Timișoara, Timiș, 300172, România",
-            "17, Bulevardul Doctor Victor Babeș, Elisabetin, Timișoara, Timiș, 300233, România",
-            "Piața Mocioni, Bulevardul 16 Decembrie 1989, Elisabetin, Timișoara, Timiș, 300172, România",
-            "Ciprian Porumbescu, Strada Ciprian Porumbescu, Elisabetin, Timișoara, Timiș, 300239, România",
-            "Strada Ciprian Porumbescu, Elisabetin, Timișoara, Timiș, 300239, România",
-            "5, Strada Putna, Complexul Studențesc, Timișoara, Timiș, 300593, România"
+            "Bulevardul 16 Decembrie 1989, Elisabetin",
+            "C. Brancoveanu, Bulevardul 16 Decembrie 1989, Elisabetin",
+            "Statie Taxi, Piata Alexandru Mocioni, Elisabetin",
+            "Bulevardul 16 Decembrie 1989, Elisabetin",
+            "Bulevardul 16 Decembrie 1989, Elisabetin",
+            "Bulevardul Doctor Victor Babes, Elisabetin",
+            "Piata Mocioni, Bulevardul 16 Decembrie 1989",
+            "Ciprian Porumbescu, Strada Ciprian Porumbescu, Elisabetin",
+            "Strada Ciprian Porumbescu, Elisabetin, Timisoara",
+            "Strada Putna, Complexul Studentesc"
         ]
     }
 
