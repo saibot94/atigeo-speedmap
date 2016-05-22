@@ -10,14 +10,14 @@ from flask import request
 from flask.ext.cors import CORS
 
 
-from domain.mongo import get_points_with_weight
+from domain.mongo import get_points_with_weight, get_speed_stats
 
 app = Flask(__name__)
 CORS(app)
 
 
 DISPLAY_SPEED = 16  # TODO: get from config
-COUNT = 1000
+COUNT = 10000
 
 
 @app.route('/points', methods=["GET"])
@@ -45,13 +45,18 @@ def get_relatime_drive_points():
         today_unixtime = datetime(today_day.year, today_day.month, today_day.day, tzinfo=tz.tzutc()).strftime("%s")
         start_ts = today_unixtime
 
-    print start_ts
-
     points = get_points_with_weight(collection="realtime", count=COUNT, from_speed=from_speed, start_ts=start_ts, box=box, realtime=True)
 
     response = make_response(jsonify({"points": points}))
 
     return response
+
+
+@app.route('/stats/speed', methods=["GET"])
+def get_stats():
+    stats = get_speed_stats()
+    return make_response(jsonify(stats))
+
 
 
 if __name__ == "__main__":

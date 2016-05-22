@@ -2,8 +2,6 @@ from pymongo import MongoClient
 
 MONGO_HOST = "52.53.195.124"
 DB = "hacktm"
-COLLECTION_NAME = "demo"
-
 client = MongoClient(host=MONGO_HOST)
 db = client.get_database(DB)
 
@@ -18,7 +16,6 @@ FIELDS = {
 
 
 def get_points(collection, count=None, from_speed=None, start_ts=None, end_ts=None, box=None, realtime=False):
-
     query_conditions = [{"speed": {"$gte": from_speed}}]
     if box:
         nlat = box['northeastern']['lat']
@@ -73,3 +70,32 @@ def get_points_with_weight(collection, count=None, from_speed=None, start_ts=Non
     points = get_points(collection, count=count, from_speed=from_speed, start_ts=start_ts, end_ts=end_ts, box=box, realtime=realtime)
     points_with_weight = [new_point(point) for point in points]
     return points_with_weight
+
+
+def get_speed_stats():
+    collection = db.get_collection("demo")
+    data = collection.find({}, {"speedkmh": 1, "_id": 0})
+
+    total_speed = 0.0
+    total_legal_speed = 0.0
+    legal_cnt = 0
+    total_illegal_speed = 0.0
+    illegal_cnt = 0
+    for point in data:
+        speed = float(point['speedkmh'])
+        total_speed += speed
+        if speed > 50.0:
+            total_illegal_speed += speed
+            illegal_cnt += 1
+        else:
+            total_legal_speed += speed
+            legal_cnt += 1
+
+
+    points_cnt = data.count()
+    main_avg = total_speed / points_cnt
+    legal_avg = total_legal_speed / legal_cnt
+    illegal_avg = total_illegal_speed / illegal_cnt
+
+    return {'main_avg': main_avg, 'legal_avg': legal_avg, 'illegal_avg': illegal_avg}
+
