@@ -27,10 +27,10 @@ public class App {
 //    private static String MONGO_COLLECTION = "drives";
 //    private static String MONGO_COLLECTION = "demo";
 //    private static String MONGO_COLLECTION = "mock";
-//    private static String MONGO_COLLECTION = "randtm";
+    private static String MONGO_COLLECTION = "randtm1";
 //        private static String MONGO_COLLECTION = "sunday";
 
-    private static String MONGO_COLLECTION = "realtime";
+//    private static String MONGO_COLLECTION = "realtime";
 
 
     private static long FILE_SLEEP = 2 * 1000;
@@ -249,9 +249,9 @@ public class App {
             double latDouble = jsonNode.get("latitude").asDouble();
 
             //random
-//            Random random = new Random();
-//            latDouble = random.doubles(44.759780, 47.759780).findFirst().getAsDouble();
-//            longDouble = random.doubles(20.230020, 22.230020).findFirst().getAsDouble();
+            Random random = new Random();
+            latDouble = random.doubles(45.70, 47.85).findFirst().getAsDouble();
+            longDouble = random.doubles(21.1, 21.3).findFirst().getAsDouble();
 
             jNode = jNode.add(longDouble);
             jNode = jNode.add(latDouble);
