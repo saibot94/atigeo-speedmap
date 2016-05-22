@@ -18,14 +18,26 @@ app_conf.read("atism.ini")
 
 
 LEGAL_SPEED_LIMIT = app_conf.get("Legal", "speed")
+DISPLAY_SPEED = 16  # TODO: get from config
 
 
 @app.route('/points', methods=["GET"])
 def get_drive_points():
     start_ts = request.args.get('start_ts')
     end_ts = request.args.get('end_ts')
+    from_speed = request.args.get('from_speed', DISPLAY_SPEED)
 
-    points = get_points_with_weight(count=10000)
+    points = get_points_with_weight(count=10000, from_speed=from_speed)
+
+    response = make_response(jsonify({"points": points}))
+
+    return response
+
+@app.route('/real-points', methods=["GET"])
+def get_drive_points():
+    from_ts = request.args.get('from_ts')
+
+    points = get_points_with_weight(count=10000, from_speed=DISPLAY_SPEED)
 
     response = make_response(jsonify({"points": points}))
 
