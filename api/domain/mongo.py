@@ -99,3 +99,10 @@ def get_speed_stats():
 
     return {'main_avg': main_avg, 'legal_avg': legal_avg, 'illegal_avg': illegal_avg}
 
+
+def get_dangerous_streets():
+    collection = db.get_collection("demo")
+    fields = {"latitude": 1, "longitude": 1, "_id": 0}
+    dangerous = collection.find({"speedkmh": {"$gte": 65.0}}, fields)
+    return list(dangerous)
+

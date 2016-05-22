@@ -10,7 +10,7 @@ from flask import request
 from flask.ext.cors import CORS
 
 
-from domain.mongo import get_points_with_weight, get_speed_stats
+from domain.mongo import get_points_with_weight, get_speed_stats, get_dangerous_streets
 
 app = Flask(__name__)
 CORS(app)
@@ -53,10 +53,15 @@ def get_relatime_drive_points():
 
 
 @app.route('/stats/speed', methods=["GET"])
-def get_stats():
+def get_stats_speed():
     stats = get_speed_stats()
     return make_response(jsonify(stats))
 
+
+@app.route('/stats/dangerous-streets', methods=["GET"])
+def get_stats_dangerous_streets():
+    stats = get_dangerous_streets()
+    return make_response(jsonify({"dangerous": stats}))
 
 
 if __name__ == "__main__":
