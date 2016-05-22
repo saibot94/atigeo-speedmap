@@ -63,11 +63,31 @@
 
                       var timestamp = item[prop];
                       var d =  new Date(timestamp);
-                      if(d.getHours() >= Number(val[0])){
+                      if(d.getHours() > Number(val[0]))
+                      {
                         return true;
                       }
-                      else if(d.getMinutes() >= Number(val[1]))
+                      else if(d.getHours() == Number(val[0]) && d.getMinutes() >= Number(val[1])){
+                        return true;
+                      }
+                      return false;
+
+                       //if Number(timestamp[0]) > val[0]
+
+                    }
+                }
+
+
+            vm.lowerThanTimestamp = function(prop, val){
+                    return function(item){
+
+                      var timestamp = item[prop];
+                      var d =  new Date(timestamp);
+                     if(d.getHours() < Number(val[0]))
                       {
+                        return true;
+                      }
+                      else if(d.getHours() == Number(val[0]) && d.getMinutes() <= Number(val[1])){
                         return true;
                       }
                       return false;
@@ -79,8 +99,12 @@
 
 	        vm.changeHeatLayer = function(newlow, newhigh){
                 var filteredByLow = $filter('filter')(vm.currentPoints, vm.greaterThanTimestamp('unixtime', newlow));
-                console.log(filteredByLow);
-                createHeatLayer(vm.heatLayer, filteredByLow, true);
+                var filteredByHigh = $filter('filter')(filteredByLow, vm.lowerThanTimestamp('unixtime', newhigh));
+
+                if (!filteredByHigh || filteredByHigh.length == 1){
+                    filteredByHigh = [];
+                }
+                createHeatLayer(vm.heatLayer, filteredByHigh, true);
                 //vm.heatLayer = getMockHeatLayer(vm.heatLayer, high);
 
 	        }
