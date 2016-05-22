@@ -5,14 +5,17 @@
                 .controller('MapController', MapController);
 
 
-		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi', 'ApiCarDataService','LocationService', '$filter'];
-		function MapController ($scope, uiGmapGoogleMapApi, ApiCarDataService, LocationService, $filter) {
+		MapController.$inject = ['$scope', 'uiGmapGoogleMapApi', 'ApiCarDataService','LocationService', '$filter', '$interval'];
+		function MapController ($scope, uiGmapGoogleMapApi, ApiCarDataService, LocationService, $filter, $interval) {
 			var vm = this;
 			vm.coordinates = computeCoordinates(LocationService.GetBounds());
          	vm.heatLayer = null;
             vm.sliderHigh = 86340;
             vm.sliderLow = 0;
+            vm.speedFilter = 20;
+            vm.filteredData = [];
 
+            vm.realTime = LocationService.GetRealtime();
             vm.map = {
                 center: {
                 latitude: vm.coordinates.lat,
@@ -27,11 +30,65 @@
                 showHeat: true
             };
 
+            console.log('realtime: ', vm.realTime);
+            if(!vm.realTime){
+                ApiCarDataService.GetPoints().then(function(res){
+                    var points = res.data.points;
+                    //points = points.concat(getTaxiData());
+                    createHeatLayer(vm.heatLayer, points);
+                });
+            }
+            else {
+                initRealtimeCalls();
+            }
 
-            ApiCarDataService.GetPoints().then(function(res){
-                var points = res.data.points;
-                createHeatLayer(vm.heatLayer, points);
-            });
+            function initRealtimeCalls(){
+                ApiCarDataService.InitRealtimePoints().then(function(res){
+                    var points = res.data.points;
+                    createHeatLayer(vm.heatLayer, points);
+                    vm.intervalHandle = $interval(vm.cyclicRealtimeCall, 3500);
+                });
+            }
+
+            vm.cyclicRealtimeCall = function(){
+                ApiCarDataService.PollRealtime().then(function(res){
+                    extendHeatLayer(res.data.points);
+
+
+                });
+            }
+
+
+            vm.changeRealtime = function(){
+                if(vm.realTime){
+                    initRealtimeCalls();
+                    console.log('started realtime calls');
+                }
+                else{
+                    $interval.cancel(vm.intervalHandle);
+                    vm.intervalHandle = null;
+                    console.log('stopped realtime calls');
+                }
+            }
+
+
+            function extendHeatLayer(points){
+                uiGmapGoogleMapApi.then(function (maps){
+                    var googlePoints = [];
+                    for(var i =0; i < points.length; i++){
+                        var point = new maps.LatLng(points[i].latitude, points[i].longitude);
+                                googlePoints.push({location: point, weight: points[i].weight,
+                                unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
+                        googlePoints.push(point);
+                    }
+                    console.log('to concat: ', googlePoints);
+                    googlePoints = googlePoints.concat(vm.currentPoints);
+                    vm.currentPoints = googlePoints;
+                    var pointArray = new maps.MVCArray(googlePoints);
+                    vm.heatLayer.setData(pointArray);
+
+                });
+            }
 
             vm.sliderOptions  = {
               step: 60,
@@ -54,6 +111,25 @@
                     vm.changeHeatLayer(low, high)
                }
             };
+            vm.speedSliderOptions = {
+                floor: 0,
+                ceil: 100,
+                showSelectionBar: true,
+                getSelectionBarColor: function(value) {
+                    if (value <= 20)
+                        return 'green';
+                    if (value <= 60)
+                        return 'yellow';
+                    if (value <= 70)
+                        return 'orange';
+                    return 'red';
+                },
+                onChange: function(change) {
+                    vm.changeHeatLayer();
+                }
+
+            };
+
 
             vm.parseTimestamp = parseTimestamp;
 
@@ -63,11 +139,11 @@
 
                       var timestamp = item[prop];
                       var d =  new Date(timestamp);
-                      if(d.getHours() >= Number(val[0])){
+                      if(d.getHours() > Number(val[0]))
+                      {
                         return true;
                       }
-                      else if(d.getMinutes() >= Number(val[1]))
-                      {
+                      else if(d.getHours() == Number(val[0]) && d.getMinutes() >= Number(val[1])){
                         return true;
                       }
                       return false;
@@ -77,10 +153,59 @@
                     }
                 }
 
+
+            vm.lowerThanTimestamp = function(prop, val){
+                    return function(item){
+
+                      var timestamp = item[prop];
+                      var d =  new Date(timestamp);
+                     if(d.getHours() < Number(val[0]))
+                      {
+                        return true;
+                      }
+                      else if(d.getHours() == Number(val[0]) && d.getMinutes() <= Number(val[1])){
+                        return true;
+                      }
+                      return false;
+
+                       //if Number(timestamp[0]) > val[0]
+
+                    }
+                }
+
+
+            vm.speedHigherThanFilter = function(prop, val){
+                    return function(item){
+
+                      var speedkmh = item[prop];
+                      return speedkmh >= val;
+
+                       //if Number(timestamp[0]) > val[0]
+
+                    }
+                }
+
 	        vm.changeHeatLayer = function(newlow, newhigh){
-                var filteredByLow = $filter('filter')(vm.currentPoints, vm.greaterThanTimestamp('unixtime', newlow));
-                console.log(filteredByLow);
-                createHeatLayer(vm.heatLayer, filteredByLow, true);
+	            var filteredByHigh = null;
+	            if(newlow && newhigh){
+                    var filteredByLow = $filter('filter')(vm.currentPoints, vm.greaterThanTimestamp('unixtime', newlow));
+                    var filteredByHigh = $filter('filter')(filteredByLow, vm.lowerThanTimestamp('unixtime', newhigh));
+
+	            }
+	            if(filteredByHigh){
+	                vm.filteredData = $filter('filter')(filteredByHigh,
+	                        vm.speedHigherThanFilter('speedkmh', vm.speedFilter));
+	            }
+	            else {
+	                vm.filteredData = $filter('filter')(vm.currentPoints,
+	                    vm.speedHigherThanFilter('speedkmh', vm.speedFilter));
+	            }
+
+	            if (! vm.filteredData ||  vm.filteredData.length == 1){
+                     vm.filteredData = [];
+                }
+
+                createHeatLayer(vm.heatLayer,  vm.filteredData, true);
                 //vm.heatLayer = getMockHeatLayer(vm.heatLayer, high);
 
 	        }
@@ -101,7 +226,8 @@
                         console.log('points len: ' + points.length);
                         for(var i = 0; i < points.length; i++) {
                             var point = new maps.LatLng(points[i].latitude, points[i].longitude);
-                            googlePoints.push({location: point, weight: points[i].weight, unixtime: points[i].unixtime });
+                            googlePoints.push({location: point, weight: points[i].weight,
+                            unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
                         }
                         var pointArray = new maps.MVCArray(googlePoints);
                         }
@@ -151,12 +277,9 @@
         }
 
 
-
-
-		function getMockHeatLayer(heatLayer, initialWeight) {
-		    // Adding 500 Data Points
-		       var taxiData = [
-	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: initialWeight},
+        function getTaxiData(){
+           var taxiData = [
+	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 1},
 	        new google.maps.LatLng(37.782745, -122.444586),
 	        new google.maps.LatLng(37.782842, -122.443688),
 	        new google.maps.LatLng(37.782919, -122.442815),
@@ -657,6 +780,14 @@
 	        new google.maps.LatLng(37.752986, -122.403112),
 	        new google.maps.LatLng(37.751266, -122.403355)
     ];
+
+            return taxiData;
+        }
+
+
+		function getMockHeatLayer(heatLayer, initialWeight) {
+		    // Adding 500 Data Points
+		    var taxiData = getTaxiData();
 		    var pointArray = new google.maps.MVCArray(taxiData);
 		    heatLayer.setData(pointArray);
 		    return heatLayer
