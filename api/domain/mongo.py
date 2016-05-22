@@ -10,7 +10,29 @@ db = client.get_database(DB)
 
 
 def get_points(count=None, from_speed=None, start_ts=None, end_ts=None, box=None):
-    points_cursor = db.drives.find({"speed": {"$gte": from_speed}},
+    query_conditions = [{"speed": {"$gte": from_speed}}]
+    if box:
+        nlat = box['northeastern']['lat']
+        elong = box['northeastern']['long']
+        slat = box['southwestern']['lat']
+        wlong = box['southwestern']['lang']
+        query_conditions.append({"and": [{"latitude":  {"$lte": nlat}},
+                                         {"latitude":  {"$gte": slat}},
+                                         {"longitude": {"$gte": wlong}},
+                                         {"longitude": {"$lte": elong}}]})
+
+    if start_ts:
+        query_conditions.append({"unixtime": {"$gte": start_ts}})
+
+    if end_ts:
+        query_conditions.append({"unixtime": {"$lte": end_ts}})
+
+    if len(query_conditions) == 1:
+        query = query_conditions[0]
+    else:
+        query = {"and": query_conditions}
+
+    points_cursor = db.drives.find(query,
                                    {'latitude': 1, 'longitude': 1, 'unixtime': 1, 'speedkmh': 1, '_id': 0})
     return points_cursor if not count else points_cursor.limit(count)
 

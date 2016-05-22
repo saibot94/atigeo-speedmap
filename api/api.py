@@ -27,7 +27,6 @@ def get_drive_points():
     realtime = request.args.get('realtime')
     box = request.args.get('box')
 
-
     today_unixtime = None
     if realtime and not start_ts:
         today_day = datetime.utcnow().date()
