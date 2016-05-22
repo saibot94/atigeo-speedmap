@@ -93,7 +93,6 @@
                     "value" : data.main_avg
                     }
                 ];
-                console.log('new data', newDataArray);
          vm.chartData[0].values = newDataArray;
         });
 

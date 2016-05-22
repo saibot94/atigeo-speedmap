@@ -7,18 +7,19 @@
                     Analytics
                 </h2>
             </div>
-            <div class="col-md-4 col-md-push-1" ng-controller="GraphController as vm">
-                <div class="chart-wrapper">
+            <div class="col-md-5 col-md-push-1" ng-controller="GraphController as vm">
+            <div class="chart-wrapper">
 
-                    <div class="chart-header">
-                        <h5>Line graph 1</h5>
-                    </div>
-                    <div class="chart-content">
-                        <nvd3 options="vm.lineGraphOptions" data="vm.lineGraphData"></nvd3>
-                    </div>
+                <div class="chart-header">
+                    <h5>Evolution of speed</h5>
                 </div>
-
+                <div class="chart-content">
+                    <nvd3 options="vm.lineGraphOptions" data="vm.lineGraphData"></nvd3>
+                </div>
             </div>
+            </div>
+
+
             <div class="col-md-6 col-md-push-1" ng-controller="BarChartController as barchart">
                 <div class="chart-wrapper">
 
@@ -30,17 +31,46 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-4 col-md-push-1" ng-controller="GraphController as vm">
-                <div class="chart-wrapper">
+             <div class="col-md-5 col-md-push-1" ng-controller="DangerZonesController as dangerZones">
+                <div class="chart-wrapper" style="height: 350px; overflow: auto">
 
                     <div class="chart-header">
-                        <h5>Line graph 1</h5>
+                        <h5>Identified danger zones</h5>
                     </div>
                     <div class="chart-content">
-                        <nvd3 options="vm.lineGraphOptions" data="vm.lineGraphData"></nvd3>
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Address</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr ng-repeat="zone in dangerZones.dangerousZones ">
+                                <td>{{zone}}</td>
+                            </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
+            <div class="col-md-5 col-md-push-1" ng-controller="IllegalitiesController as il">
+                  <div class="chart-wrapper">
+
+                    <div class="chart-header">
+                        <h5>Identified illegalities since page load</h5>
+                    </div>
+                    <div style="width:150px">
+                        <table class="table table-bordered table-striped">
+                            <tr>
+                                <td ><span class="illegalities">{{il.illegalities}}</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
         </div>
     </div>
 </div>

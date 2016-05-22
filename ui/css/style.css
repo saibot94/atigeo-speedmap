@@ -70,19 +70,23 @@ body {
         }
 
   .our-logo{
-    margin-top: 20px;
-    padding-left: 15px;
+       margin-top: 20px;
+    padding-left: 50px;
     margin-bottom: 20px;
-    align: center,
-    width:150px;height:100px;
+    align: center, width:150px;
+    height: 100px;
+    width: 270px;
+    margin-left: 60px;
   }
 
   .our-logo-smallish{
-      margin-top: 20px;
-    padding-left: 0;
+        margin-top: 20px;
+    margin-left: 10px;
     margin-bottom: 20px;
-    align: center,
-    width:55px;height:30px;
+    float: right;
+    align: center, width:30px;
+    height: 30px;
+    width: 50px;
   }
 
 
@@ -170,10 +174,17 @@ text-align: center;
     border-style: solid solid none;
     border-width: 3px 0 0;
     color: inherit;
+
     margin-bottom: 0;
     padding: 14px 15px 7px;
     min-height: 48px;
    }
+
+ .chart-header > h5 {
+     font-weight: bolder;
+    font-size: 18px;
+
+ }
 
   .chart-content {
       background-color: #ffffff;
@@ -184,4 +195,13 @@ text-align: center;
     border-style: solid solid none;
     border-width: 1px 0;
 
+   }
+
+   .illegalities{
+
+       text-align: center;
+    margin-left: 60px;
+    font-weight: bolder;
+    color: crimson;
+    font-size: 30px;
    }
