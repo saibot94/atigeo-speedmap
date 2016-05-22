@@ -28,9 +28,11 @@ public class App {
 //    private static String MONGO_COLLECTION = "demo";
 //    private static String MONGO_COLLECTION = "mock";
 //    private static String MONGO_COLLECTION = "randtm1";
-//        private static String MONGO_COLLECTION = "sunday";
 
-    private static String MONGO_COLLECTION = "realtime1";
+//        private static String MONGO_COLLECTION = "sunday";
+    private static String MONGO_COLLECTION = "sunday2";
+
+//    private static String MONGO_COLLECTION = "realtime1";
 
 
     private static long FILE_SLEEP = 2 * 1000;
@@ -247,12 +249,12 @@ public class App {
 
 
             //random
-            Random random = new Random();
-            latitude = random.doubles(45.70, 46.55).findFirst().getAsDouble();
-            longitude = random.doubles(21.1, 21.3).findFirst().getAsDouble();
+//            Random random = new Random();
+//            latitude = random.doubles(45.70, 46.55).findFirst().getAsDouble();
+//            longitude = random.doubles(21.1, 21.3).findFirst().getAsDouble();
 
-            if(latitude < 45 || latitude > 48)
-                throw new RuntimeException("wrong latitude");
+//            if(latitude < 45 || latitude > 48)
+//                throw new RuntimeException("wrong latitude");
 
             jNode = jNode.add(longitude);
             jNode = jNode.add(latitude);
