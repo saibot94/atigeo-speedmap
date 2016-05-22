@@ -25,7 +25,15 @@ public class App {
 
     private static String MONGO_DATABASE = "hacktm";
 //    private static String MONGO_COLLECTION = "drives";
-    private static String MONGO_COLLECTION = "demo";
+//    private static String MONGO_COLLECTION = "demo";
+//    private static String MONGO_COLLECTION = "mock";
+    private static String MONGO_COLLECTION = "realtime";
+
+    private static long FILE_SLEEP = 1 * 1000;
+    private static long BATCH_SLEEP = 1 * 1000;
+    private static long DIR_SLEEP = 5 * 1000;
+
+    private static int BATCH_SIZE = 1500;
 
     private static String MONGO_HOST = "hack-mongo";
     private static int MONGO_PORT = 27017;
@@ -50,6 +58,13 @@ public class App {
             streaming = true;
         }
 
+        if(!streaming){
+            BATCH_SLEEP = 0;
+            FILE_SLEEP = 0;
+        }
+
+
+
         String dumpDirectory = args[0];
 
         App app = new App();
@@ -67,7 +82,7 @@ public class App {
             LOGGER.info("crawling ... ");
             app.crawlDirectory(dumpDirectory, streaming);
             LOGGER.info("sleeping ... ");
-            Thread.sleep(10 * 1000);
+            Thread.sleep(DIR_SLEEP);
         }
     }
 
@@ -79,7 +94,6 @@ public class App {
 
 
 
-
     private void checkCollection(){
         MongoCollection<Document> collection = mongoDatabase.getCollection(MONGO_COLLECTION);
         if(collection == null){
@@ -87,7 +101,7 @@ public class App {
         }
     }
 
-    private void crawlDirectory(String dumpDirectoryPath, boolean streaming){
+    private void crawlDirectory(String dumpDirectoryPath, boolean streaming) throws InterruptedException {
 
         File dumpDirectory = new File(dumpDirectoryPath);
         if(!dumpDirectory.isDirectory()){
@@ -104,7 +118,6 @@ public class App {
         Arrays.sort(listOfFiles);
 
 
-
         for(int i=0; i<listOfFiles.length - lastDirectory; i++){
             File file = listOfFiles[i];
 
@@ -112,7 +125,7 @@ public class App {
                 continue;
 
             String fileName = file.getName();
-            if(!fileName.startsWith("drive_dump"))
+            if(!fileName.startsWith("drive_dump") && !fileName.startsWith("MOCK_DATA"))
                 continue;
 
             LOGGER.info(String.format("dumping file: %s", file.getName()));
@@ -121,6 +134,9 @@ public class App {
             String archivedFile = parentPath +File.separator+ "archived" +File.separator + file.getName();
             LOGGER.info(String.format("archived to: %s", archivedFile));
 
+            if(FILE_SLEEP > 1000)
+                Thread.sleep(FILE_SLEEP);
+
             processFile(file.getAbsolutePath(), archivedFile);
 
             file.delete();
@@ -128,7 +144,7 @@ public class App {
     }
 
 
-    private void processFile(String fileName, String archivedFile){
+    private void processFile(String fileName, String archivedFile) throws InterruptedException {
         LOGGER.info(String.format("PROCESSING FILE %s", fileName));
 
         MongoCollection<Document> collection = mongoDatabase.getCollection(MONGO_COLLECTION);
@@ -148,9 +164,19 @@ public class App {
 
                 documents.add(dbObject);
                 bufferedWriter.write(line);
+
+                if(documents.size() >= BATCH_SIZE){
+                    collection.insertMany(documents);
+                    documents.clear();
+                    if(BATCH_SLEEP > 1000)
+                        Thread.sleep(BATCH_SLEEP);
+                }
             }
 
-            collection.insertMany(documents);
+            if(documents.size() > 2)
+                collection.insertMany(documents);
+
+            LOGGER.info(String.format("documents written: %d", documents.size()));
 
             bufferedReader.close();
             bufferedWriter.close();
@@ -227,9 +253,22 @@ public class App {
         }
 
         if(jsonNode.has("drivetime")) {
+
             //unix time
             JsonNode driveTimeValue = jsonNode.get("drivetime");
             String driveTime = driveTimeValue.asText();
+            if(driveTime.length() != 15){
+                Calendar cal = new GregorianCalendar();
+                cal.setTimeInMillis(System.currentTimeMillis());
+                driveTime = "" + cal.get(Calendar.YEAR)
+                        + (cal.get(Calendar.MONTH) > 10 ? cal.get(Calendar.MONTH) : ("0" + cal.get(Calendar.MONTH) ))
+                        + (cal.get(Calendar.DAY_OF_MONTH) > 10 ? cal.get(Calendar.DAY_OF_MONTH) : ("0" + cal.get(Calendar.DAY_OF_MONTH) ))
+                        + (cal.get(Calendar.HOUR_OF_DAY) > 10 ? cal.get(Calendar.HOUR_OF_DAY) : ("0" + cal.get(Calendar.HOUR_OF_DAY) ))
+                        + (cal.get(Calendar.MINUTE) > 10 ? cal.get(Calendar.MINUTE) : ("0" + cal.get(Calendar.MINUTE) ))
+                        + (cal.get(Calendar.SECOND) > 10 ? cal.get(Calendar.SECOND) : ("0" + cal.get(Calendar.SECOND) ))
+                        + cal.get(Calendar.MILLISECOND);
+            }
+
             String year = driveTime.substring(0, 4);
             String month = driveTime.substring(4, 6);
             String day = driveTime.substring(6, 8);
