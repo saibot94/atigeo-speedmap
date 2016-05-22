@@ -31,13 +31,26 @@
                 Enable heatmap
             </label>
         </div>
+        <div class="checkbox checkbox-primary pull-right">
+            <input type="checkbox" id="checkbox2" class="styled" ng-model="mapController.realTime" ng-change="mapController.changeRealtime()">
+            <label for="checkbox2" class="checkbox-text-enable-heat">
+                Enable realtime data
+            </label>
+        </div>
+        <div class="col-md-12 ">
 
-        <div>
-            <span class="time-indicator"><span ng-bind="mapController.parseTimestamp(mapController.sliderLow)"></span> -
+            <span class="time-indicator"><span style="font-size:20px;float:left !important;">Time:</span> <span ng-bind="mapController.parseTimestamp(mapController.sliderLow)"></span> -
                 <span ng-bind="mapController.parseTimestamp(mapController.sliderHigh)"></span> </span>
             <rzslider rz-slider-model="mapController.sliderLow"
                       rz-slider-high="mapController.sliderHigh"
                       rz-slider-options="mapController.sliderOptions"></rzslider>
+            <br>
+
+            <span class="speed-indicator"><span style="font-size:20px;float:left !important;">Speed:</span> <span ng-bind="mapController.speedFilter"></span>km/h </span>
+            <rzslider rz-slider-model="mapController.speedFilter"
+                      rz-slider-options="mapController.speedSliderOptions"></rzslider>
+
+
             <!--<md-slider transform-test ng-model="mapController.sliderValue" flex min="0" max="86400" step="60" id="red-slider" class></md-slider>-->
         </div>
 

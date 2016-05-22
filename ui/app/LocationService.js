@@ -8,15 +8,22 @@
 	function LocationService(){
 	    var location = 'Timisoara';
 	    var bounds = null;
+	    var realtime = false;
+
 	    var service = {
 	        GetLocation: getLocation,
 	        SetLocation: setLocation,
 	        SetBounds: setBounds,
-	        GetBounds: getBounds
+	        GetBounds: getBounds,
+	        GetRealtime: getRealtime,
+	        SetRealtime: setRealtime
 	    };
 
 	    return service;
 
+        function setRealtime(val){
+            realtime = val;
+        }
 
 	    function setLocation(loc){
             location = loc;
@@ -33,6 +40,10 @@
 
 	    function getBounds(){
 	        return bounds;
+	    }
+
+	    function getRealtime(){
+	        return realtime;
 	    }
 	}
 

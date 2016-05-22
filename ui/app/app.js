@@ -46,13 +46,14 @@
 
 	MainController.$inject = ['$scope', 'ApiAggregateService', '$sce','$filter', '$q','LocationService', 'loc'];
 
-	function MainController($scope, ApiAggregateService, $sce, $filter, $q,LocationService, loc){
+	function MainController($scope, ApiAggregateService, $sce, $filter, $q, LocationService, loc){
 
 		var vm = this;
 
 
 		console.log('locatino: ' + loc);
         vm.location = loc.data.results[0].formatted_address;//address_components[0].long_name;
+        console.log(loc.data.results[0].geometry.bounds);
         LocationService.SetBounds(loc.data.results[0].geometry.bounds);
 
 
