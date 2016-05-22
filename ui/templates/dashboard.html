@@ -31,7 +31,12 @@
                 Enable heatmap
             </label>
         </div>
-
+        <div class="checkbox checkbox-primary pull-right">
+            <input type="checkbox" id="checkbox2" class="styled" ng-model="mapController.realTime" ng-change="mapController.changeRealtime()">
+            <label for="checkbox2" class="checkbox-text-enable-heat">
+                Enable realtime data
+            </label>
+        </div>
         <div class="col-md-12 ">
 
             <span class="time-indicator"><span style="font-size:20px;float:left !important;">Time:</span> <span ng-bind="mapController.parseTimestamp(mapController.sliderLow)"></span> -

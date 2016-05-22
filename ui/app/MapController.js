@@ -30,6 +30,7 @@
                 showHeat: true
             };
 
+            console.log('realtime: ', vm.realTime);
             if(!vm.realTime){
                 ApiCarDataService.GetPoints().then(function(res){
                     var points = res.data.points;
@@ -38,20 +39,56 @@
                 });
             }
             else {
+                initRealtimeCalls();
+            }
+
+            function initRealtimeCalls(){
                 ApiCarDataService.InitRealtimePoints().then(function(res){
                     var points = res.data.points;
                     createHeatLayer(vm.heatLayer, points);
-                    $interval(vm.cyclicRealtimeCall, 2000);
+                    vm.intervalHandle = $interval(vm.cyclicRealtimeCall, 3500);
                 });
             }
-
 
             vm.cyclicRealtimeCall = function(){
                 ApiCarDataService.PollRealtime().then(function(res){
-                    console.log(res);
+                    extendHeatLayer(res.data.points);
+
+
                 });
             }
 
+
+            vm.changeRealtime = function(){
+                if(vm.realTime){
+                    initRealtimeCalls();
+                    console.log('started realtime calls');
+                }
+                else{
+                    $interval.cancel(vm.intervalHandle);
+                    vm.intervalHandle = null;
+                    console.log('stopped realtime calls');
+                }
+            }
+
+
+            function extendHeatLayer(points){
+                uiGmapGoogleMapApi.then(function (maps){
+                    var googlePoints = [];
+                    for(var i =0; i < points.length; i++){
+                        var point = new maps.LatLng(points[i].latitude, points[i].longitude);
+                                googlePoints.push({location: point, weight: points[i].weight,
+                                unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
+                        googlePoints.push(point);
+                    }
+                    console.log('to concat: ', googlePoints);
+                    googlePoints = googlePoints.concat(vm.currentPoints);
+                    vm.currentPoints = googlePoints;
+                    var pointArray = new maps.MVCArray(googlePoints);
+                    vm.heatLayer.setData(pointArray);
+
+                });
+            }
 
             vm.sliderOptions  = {
               step: 60,
@@ -155,7 +192,6 @@
                     var filteredByHigh = $filter('filter')(filteredByLow, vm.lowerThanTimestamp('unixtime', newhigh));
 
 	            }
-	            console.log(vm.currentPoints[0]);
 	            if(filteredByHigh){
 	                vm.filteredData = $filter('filter')(filteredByHigh,
 	                        vm.speedHigherThanFilter('speedkmh', vm.speedFilter));

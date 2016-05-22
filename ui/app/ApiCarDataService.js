@@ -29,8 +29,7 @@
             function initRealtimePoints(){
                 return $http({
                     method: 'GET',
-                    params: {'realtime': true},
-                    url: baseUrl + '/points'
+                    url: baseUrl + '/realtime-points'
                 });
             }
 
@@ -39,7 +38,7 @@
                 return $http({
                     method: 'GET',
                     params: {'start_ts' : Date.now()},
-                    url: baseUrl + '/points'
+                    url: baseUrl + '/realtime-points'
                 });
             }
 

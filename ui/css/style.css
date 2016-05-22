@@ -85,6 +85,18 @@ body {
     width:55px;height:30px;
   }
 
+
+  .conti-logo-smallish{
+        margin-top: 0;
+    padding-left: 0;
+    margin-bottom: 0;
+    align: center, width:55px;
+    height: 45px;
+
+    position: fixed;
+  }
+
+
 .collapse-sidebar {
     position: fixed;
     font-size: 3.5em;
