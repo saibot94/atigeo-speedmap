@@ -113,6 +113,7 @@ def get_dangerous_streets(collection):
     #     location = geolocator.reverse(str(point['latitude']) + ", " + str(point['longitude']))
     #     addresses.append(location.address)
 
+    # TODO: optimize computation. Don't use the "cache" below
     return [
         "Bulevardul 16 Decembrie 1989, Elisabetin",
         "C. Brancoveanu, Bulevardul 16 Decembrie 1989, Elisabetin",
