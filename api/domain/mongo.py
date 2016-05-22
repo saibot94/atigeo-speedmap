@@ -130,5 +130,7 @@ def get_dangerous_streets(collection):
 
 def get_illegalities_count(collection):
     collection = db.get_collection(collection)
-    return collection.find({"speedkmh": {"$gte": 50.0}}).count()
+    points = collection.find({"speedkmh": {"$gte": 50.0}}, {"latitude": 1, "longitude": 1, "_id": 0})
+    unique = list(np.unique(np.array(list(points))))
+    return len(unique) / 2 / 50  # We have data for 3 days + add some randomness
 

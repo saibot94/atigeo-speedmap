@@ -65,7 +65,7 @@ def get_stats_speed():
 def get_stats_dangerous_streets():
     collection = request.args.get('collection', 'demo')
     stats = get_dangerous_streets(collection)
-    return make_response(jsonify({"dangerous": list(stats)[:10]}))
+    return make_response(jsonify({"dangerous": stats}))
 
 
 @app.route('/stats/illegalities-count', methods=["GET"])
