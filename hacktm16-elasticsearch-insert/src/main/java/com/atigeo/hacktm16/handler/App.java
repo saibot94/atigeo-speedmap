@@ -27,10 +27,10 @@ public class App {
 //    private static String MONGO_COLLECTION = "drives";
 //    private static String MONGO_COLLECTION = "demo";
 //    private static String MONGO_COLLECTION = "mock";
-    private static String MONGO_COLLECTION = "randtm1";
+//    private static String MONGO_COLLECTION = "randtm1";
 //        private static String MONGO_COLLECTION = "sunday";
 
-//    private static String MONGO_COLLECTION = "realtime";
+    private static String MONGO_COLLECTION = "realtime1";
 
 
     private static long FILE_SLEEP = 2 * 1000;
@@ -245,16 +245,21 @@ public class App {
             if (latitude > 1000 || latitude < -1000)
                 return null;
 
-            double longDouble = jsonNode.get("longitude").asDouble();
-            double latDouble = jsonNode.get("latitude").asDouble();
 
             //random
             Random random = new Random();
-            latDouble = random.doubles(45.70, 47.85).findFirst().getAsDouble();
-            longDouble = random.doubles(21.1, 21.3).findFirst().getAsDouble();
+            latitude = random.doubles(45.70, 46.55).findFirst().getAsDouble();
+            longitude = random.doubles(21.1, 21.3).findFirst().getAsDouble();
 
-            jNode = jNode.add(longDouble);
-            jNode = jNode.add(latDouble);
+            if(latitude < 45 || latitude > 48)
+                throw new RuntimeException("wrong latitude");
+
+            jNode = jNode.add(longitude);
+            jNode = jNode.add(latitude);
+
+            jsonNode = jsonNode.put("longitude", longitude);
+            jsonNode = jsonNode.put("latitude", latitude);
+
             Map<String, JsonNode> geoMap = new HashMap<>();
             geoMap.put("coordinates", jNode);
             ObjectNode geo = mapper.createObjectNode();
