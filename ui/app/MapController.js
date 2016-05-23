@@ -24,7 +24,6 @@
                 zoom: 14,
                 heatLayerCallback: function (layer) {
                     //set the heat layers backend data
-                    //new google.maps.MVCArray(googlePoints);
                     vm.heatLayer  = getMockHeatLayer(layer, 1);
                     },
                 showHeat: true
@@ -133,6 +132,10 @@
                     return 'red';
                 },
                 onChange: function(change) {
+
+                    var low = parseTimestamp(vm.sliderLow).split(":");
+                    var high = parseTimestamp(vm.sliderHigh).split(":");
+
                     vm.changeHeatLayer();
                 }
 
@@ -214,7 +217,6 @@
                 }
 
                 createHeatLayer(vm.heatLayer,  vm.filteredData, true);
-                //vm.heatLayer = getMockHeatLayer(vm.heatLayer, high);
 
 	        }
 
@@ -227,20 +229,19 @@
 
            function createHeatLayer(heatLayer, points, isGooglePointsArray){
 
-
                   uiGmapGoogleMapApi.then(function(maps) {
                         if(!isGooglePointsArray){
-                        var googlePoints = [];
-                        console.log('points len: ' + points.length);
-                        for(var i = 0; i < points.length; i++) {
-                            var point = new maps.LatLng(points[i].latitude, points[i].longitude);
-                            googlePoints.push({location: point, weight: points[i].weight,
-                            unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
-                        }
-                        var pointArray = new maps.MVCArray(googlePoints);
+                            var googlePoints = [];
+                            console.log('points len: ' + points.length);
+                            for(var i = 0; i < points.length; i++) {
+                                var point = new maps.LatLng(points[i].latitude, points[i].longitude);
+                                googlePoints.push({location: point, weight: points[i].weight,
+                                unixtime: points[i].unixtime, speedkmh: points[i].speedkmh });
+                            }
+                            var pointArray = new maps.MVCArray(googlePoints);
                         }
                         else {
-                        var pointArray = new maps.MVCArray(points);
+                             var pointArray = new maps.MVCArray(points);
                         }
 
                         heatLayer.setData(pointArray);
@@ -249,7 +250,7 @@
                             vm.currentPoints = googlePoints;
                         }
                     });
-
+                    console.log('current points', vm.currentPoints);
             }
 
 
@@ -287,7 +288,7 @@
 
         function getTaxiData(){
            var taxiData = [
-	        {location: new google.maps.LatLng(37.782551, -122.445368), weight: 1},
+	        new google.maps.LatLng(37.782551, -122.445368),
 	        new google.maps.LatLng(37.782745, -122.444586),
 	        new google.maps.LatLng(37.782842, -122.443688),
 	        new google.maps.LatLng(37.782919, -122.442815),
@@ -788,8 +789,31 @@
 	        new google.maps.LatLng(37.752986, -122.403112),
 	        new google.maps.LatLng(37.751266, -122.403355)
     ];
+        var finalTaxiData = [];
+            for(var i = 0; i < taxiData.length; i++){
+                var weight = 1;
+                var speedkmh = Math.random() * 100;
+                if(speedkmh <= 20){
+                    weight = 1/5;
+                }
+                else if(speedkmh <= 40){
+                    weight = 1/3;
+                }
+                else if (speedkmh <= 60){
+                    weight = 1;
+                }
+                else if (speedkmh <= 80){
+                    weight = 1.25;
+                }
+                else {
+                    weight = 5;
+                }
 
-            return taxiData;
+                finalTaxiData.push({location: taxiData[i], weight: weight, speedkmh: speedkmh, unixtime: Date.now() });
+
+            };
+
+            return finalTaxiData;
         }
 
 
