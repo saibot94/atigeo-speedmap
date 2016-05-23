@@ -45,13 +45,15 @@
             function initRealtimeCalls(){
                 ApiCarDataService.InitRealtimePoints().then(function(res){
                     var points = res.data.points;
+                    console.log(points);
                     createHeatLayer(vm.heatLayer, points);
-                    vm.intervalHandle = $interval(vm.cyclicRealtimeCall, 3500);
+                    vm.intervalHandle = $interval(vm.cyclicRealtimeCall, 1000);
                 });
             }
 
             vm.cyclicRealtimeCall = function(){
                 ApiCarDataService.PollRealtime().then(function(res){
+                    console.log('realtime poll: ', res.data.points);
                     extendHeatLayer(res.data.points);
 
 

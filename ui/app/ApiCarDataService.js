@@ -20,7 +20,7 @@
 
             function getPoints(){
                         var defaultDb = LocationService.GetDefaultDb();
-
+``
                 if(!defaultDb ){
                     return $http({
                     method: 'GET',
@@ -37,7 +37,7 @@
 
              function initRealtimePoints(){
                          var defaultDb = LocationService.GetDefaultDb();
-
+                console.log(defaultDb);
               if(!defaultDb ){
 
                 return $http({
@@ -58,6 +58,7 @@
 
             function pollRealtime(){
                         var defaultDb = LocationService.GetDefaultDb();
+                console.log(defaultDb);
 
                 if(!defaultDb ){
 
