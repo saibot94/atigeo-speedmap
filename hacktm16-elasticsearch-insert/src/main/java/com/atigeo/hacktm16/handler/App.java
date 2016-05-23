@@ -36,7 +36,7 @@ public class App {
     private static String MONGO_COLLECTION = "realtime";
 
 
-    private static long FILE_SLEEP = 2 * 1000;
+    private static long FILE_SLEEP = 1 * 1000;
     private static long BATCH_SLEEP = 1 * 1000;
     private static long DIR_SLEEP = 5 * 1000;
 
