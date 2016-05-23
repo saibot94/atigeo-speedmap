@@ -8,7 +8,7 @@
 
         ApiCarDataService.$inject = ['$q', '$http', 'LocationService'];
         function ApiCarDataService($q, $http, LocationService) {
-            var baseUrl = 'http://52.53.195.124:8080';
+            var baseUrl = 'http://52.53.188.254:8080';
             var service = {
                 GetPoints: getPoints,
                 InitRealtimePoints: initRealtimePoints,
