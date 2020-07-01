@@ -1,6 +1,6 @@
 elasticsearch==2.3.0
 fake-factory==0.5.7
-Flask==0.10.1
+Flask==1.0
 ipaddress==1.0.16
 itsdangerous==0.24
 Jinja2==2.8
